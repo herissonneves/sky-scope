@@ -1,8 +1,3 @@
-import { initTheme } from '@/styles';
-
-// Initialize theme on app load
-initTheme();
-
 const app = document.querySelector<HTMLDivElement>('#app');
 
 if (app) {
