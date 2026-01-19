@@ -41,7 +41,12 @@ export default [
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
-      'import/no-unresolved': 'error',
+      'import/no-unresolved': [
+        'error',
+        {
+          ignore: ['\\.css$', '\\.module\\.css$'],
+        },
+      ],
       'import/named': 'error',
       'import/default': 'error',
       'import/no-duplicates': 'error',
@@ -51,9 +56,13 @@ export default [
       'import/resolver': {
         typescript: {
           project: './tsconfig.json',
+          alwaysTryTypes: true,
         },
-        node: true,
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
       },
+      'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
     },
   },
 ];
