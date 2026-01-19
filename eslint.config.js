@@ -15,9 +15,9 @@ export default [
   // Configurações recomendadas do TypeScript ESLint
   ...tseslint.configs.recommended,
 
-  // Configuração personalizada
+  // Configuração para arquivos do projeto
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
 
     languageOptions: {
       parser: tsParser,
