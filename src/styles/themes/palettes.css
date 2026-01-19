@@ -1,0 +1,106 @@
+/**
+ * Material Design 3 - Color Palettes
+ * Tonal palettes for primary, secondary, tertiary, neutral, and neutral-variant
+ */
+
+:root {
+  /* Primary Palette */
+  --md-ref-palette-primary-0: #000000;
+  --md-ref-palette-primary-5: #00102c;
+  --md-ref-palette-primary-10: #001a41;
+  --md-ref-palette-primary-15: #002454;
+  --md-ref-palette-primary-20: #002e68;
+  --md-ref-palette-primary-25: #00397d;
+  --md-ref-palette-primary-30: #004493;
+  --md-ref-palette-primary-35: #004fa9;
+  --md-ref-palette-primary-40: #005bc0;
+  --md-ref-palette-primary-50: #3174dc;
+  --md-ref-palette-primary-60: #518ff8;
+  --md-ref-palette-primary-70: #7fabff;
+  --md-ref-palette-primary-80: #adc7ff;
+  --md-ref-palette-primary-90: #d8e2ff;
+  --md-ref-palette-primary-95: #edf0ff;
+  --md-ref-palette-primary-98: #f9f9ff;
+  --md-ref-palette-primary-99: #fefbff;
+  --md-ref-palette-primary-100: #ffffff;
+
+  /* Secondary Palette */
+  --md-ref-palette-secondary-0: #000000;
+  --md-ref-palette-secondary-5: #051125;
+  --md-ref-palette-secondary-10: #101b31;
+  --md-ref-palette-secondary-15: #1b263b;
+  --md-ref-palette-secondary-20: #253047;
+  --md-ref-palette-secondary-25: #303b52;
+  --md-ref-palette-secondary-30: #3c475e;
+  --md-ref-palette-secondary-35: #47526a;
+  --md-ref-palette-secondary-40: #535e77;
+  --md-ref-palette-secondary-50: #6c7791;
+  --md-ref-palette-secondary-60: #8691ab;
+  --md-ref-palette-secondary-70: #a0abc7;
+  --md-ref-palette-secondary-80: #bbc6e3;
+  --md-ref-palette-secondary-90: #d8e2ff;
+  --md-ref-palette-secondary-95: #edf0ff;
+  --md-ref-palette-secondary-98: #f9f9ff;
+  --md-ref-palette-secondary-99: #fefbff;
+  --md-ref-palette-secondary-100: #ffffff;
+
+  /* Tertiary Palette */
+  --md-ref-palette-tertiary-0: #000000;
+  --md-ref-palette-tertiary-5: #200427;
+  --md-ref-palette-tertiary-10: #2c0f33;
+  --md-ref-palette-tertiary-15: #381a3e;
+  --md-ref-palette-tertiary-20: #432549;
+  --md-ref-palette-tertiary-25: #4f3055;
+  --md-ref-palette-tertiary-30: #5c3b61;
+  --md-ref-palette-tertiary-35: #68466d;
+  --md-ref-palette-tertiary-40: #75527a;
+  --md-ref-palette-tertiary-50: #8f6a94;
+  --md-ref-palette-tertiary-60: #ab84af;
+  --md-ref-palette-tertiary-70: #c79eca;
+  --md-ref-palette-tertiary-80: #e3b9e7;
+  --md-ref-palette-tertiary-90: #fdd6ff;
+  --md-ref-palette-tertiary-95: #ffebfd;
+  --md-ref-palette-tertiary-98: #fff7fa;
+  --md-ref-palette-tertiary-99: #fffbff;
+  --md-ref-palette-tertiary-100: #ffffff;
+
+  /* Neutral Palette */
+  --md-ref-palette-neutral-0: #000000;
+  --md-ref-palette-neutral-5: #101114;
+  --md-ref-palette-neutral-10: #1b1b1f;
+  --md-ref-palette-neutral-15: #252629;
+  --md-ref-palette-neutral-20: #2f3033;
+  --md-ref-palette-neutral-25: #3b3b3f;
+  --md-ref-palette-neutral-30: #46464a;
+  --md-ref-palette-neutral-35: #525256;
+  --md-ref-palette-neutral-40: #5e5e62;
+  --md-ref-palette-neutral-50: #77777a;
+  --md-ref-palette-neutral-60: #919094;
+  --md-ref-palette-neutral-70: #ababaf;
+  --md-ref-palette-neutral-80: #c7c6ca;
+  --md-ref-palette-neutral-90: #e3e2e6;
+  --md-ref-palette-neutral-95: #f2f0f4;
+  --md-ref-palette-neutral-98: #faf9fd;
+  --md-ref-palette-neutral-99: #fefbff;
+  --md-ref-palette-neutral-100: #ffffff;
+
+  /* Neutral Variant Palette */
+  --md-ref-palette-neutral-variant-0: #000000;
+  --md-ref-palette-neutral-variant-5: #0e1118;
+  --md-ref-palette-neutral-variant-10: #191c22;
+  --md-ref-palette-neutral-variant-15: #23262d;
+  --md-ref-palette-neutral-variant-20: #2d3038;
+  --md-ref-palette-neutral-variant-25: #393b43;
+  --md-ref-palette-neutral-variant-30: #44474f;
+  --md-ref-palette-neutral-variant-35: #50525a;
+  --md-ref-palette-neutral-variant-40: #5c5e66;
+  --md-ref-palette-neutral-variant-50: #74777f;
+  --md-ref-palette-neutral-variant-60: #8e9099;
+  --md-ref-palette-neutral-variant-70: #a9abb4;
+  --md-ref-palette-neutral-variant-80: #c4c6d0;
+  --md-ref-palette-neutral-variant-90: #e1e2ec;
+  --md-ref-palette-neutral-variant-95: #eff0fa;
+  --md-ref-palette-neutral-variant-98: #f9f9ff;
+  --md-ref-palette-neutral-variant-99: #fefbff;
+  --md-ref-palette-neutral-variant-100: #ffffff;
+}
