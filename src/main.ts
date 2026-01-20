@@ -111,29 +111,52 @@ if (app) {
     input.disabled = true;
 
     try {
-      // Fazer requisição à API
-      const url = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=5&appid=${apiKey}`;
+      // Primeira requisição: buscar coordenadas da cidade
+      const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=5&appid=${apiKey}`;
 
-      const response = await fetch(url);
+      resultElement.textContent = 'Buscando cidade...';
+      const geoResponse = await fetch(geoUrl);
 
-      if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+      if (!geoResponse.ok) {
+        throw new Error(`Erro na requisição de geolocalização: ${geoResponse.status} ${geoResponse.statusText}`);
       }
 
-      const data = await response.json();
+      const geoData = await geoResponse.json();
 
-      // Exibir resultado formatado
-      if (Array.isArray(data) && data.length > 0) {
-        resultElement.textContent = JSON.stringify(data, null, 2);
-        resultElement.style.color = 'var(--md-sys-color-on-surface, #1A1B20)';
-      } else {
+      // Verificar se encontrou resultados
+      if (!Array.isArray(geoData) || geoData.length === 0) {
         resultElement.textContent = 'Nenhuma cidade encontrada com esse nome.';
         resultElement.style.color = 'var(--md-sys-color-on-surface-variant, #44474F)';
+        return;
       }
+
+      // Extrair lat e lon do primeiro elemento
+      const firstResult = geoData[0];
+      const { lat, lon } = firstResult;
+
+      if (!lat || !lon) {
+        throw new Error('Coordenadas não encontradas na resposta da API');
+      }
+
+      // Segunda requisição: buscar dados do clima
+      resultElement.textContent = 'Buscando dados do clima...';
+      const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&exclude=minutely,hourly,daily,alerts`;
+
+      const weatherResponse = await fetch(weatherUrl);
+
+      if (!weatherResponse.ok) {
+        throw new Error(`Erro na requisição do clima: ${weatherResponse.body} ${weatherResponse.status} ${weatherResponse.statusText}`);
+      }
+
+      const weatherData = await weatherResponse.json();
+
+      // Exibir resultado da segunda requisição formatado
+      resultElement.textContent = JSON.stringify(weatherData, null, 2);
+      resultElement.style.color = 'var(--md-sys-color-on-surface, #1A1B20)';
     } catch (error) {
       // Tratar erros
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      resultElement.textContent = `Erro ao buscar cidade: ${errorMessage}`;
+      resultElement.textContent = `Erro ao buscar dados: ${errorMessage}`;
       resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
     } finally {
       // Reabilitar input e botão
