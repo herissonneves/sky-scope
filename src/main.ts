@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 const app = document.querySelector<HTMLDivElement>('#app');
 
 if (app) {
@@ -67,13 +69,76 @@ if (app) {
     </svg>
   `;
 
+  // Elemento para exibir resultado
+  const resultElement = document.createElement('p');
+  resultElement.style.cssText = `
+    margin-top: 1rem;
+    padding: 1rem;
+    max-width: 400px;
+    width: 100%;
+    font-size: 0.875rem;
+    color: var(--md-sys-color-on-surface, #1A1B20);
+    background-color: var(--md-sys-color-surface-container, #EDEDF4);
+    border-radius: 8px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    min-height: 1.5rem;
+  `;
+
   // Função de pesquisa
-  const handleSearch = () => {
-    const searchTerm = input.value.trim();
-    if (searchTerm) {
-      console.log('Pesquisando por:', searchTerm);
-      // Aqui você pode adicionar a lógica de busca
-      // Por exemplo: buscarClima(searchTerm);
+  const handleSearch = async () => {
+    const cityName = input.value.trim();
+
+    if (!cityName) {
+      resultElement.textContent = 'Por favor, digite o nome de uma cidade.';
+      resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
+      return;
+    }
+
+    // Obter API key do ambiente
+    const apiKey = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
+
+    if (!apiKey) {
+      resultElement.textContent = 'Erro: API key não configurada. Verifique o arquivo .env';
+      resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
+      return;
+    }
+
+    // Mostrar estado de carregamento
+    resultElement.textContent = 'Buscando...';
+    resultElement.style.color = 'var(--md-sys-color-on-surface, #1A1B20)';
+    searchIcon.disabled = true;
+    input.disabled = true;
+
+    try {
+      // Fazer requisição à API
+      const url = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=5&appid=${apiKey}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      // Exibir resultado formatado
+      if (Array.isArray(data) && data.length > 0) {
+        resultElement.textContent = JSON.stringify(data, null, 2);
+        resultElement.style.color = 'var(--md-sys-color-on-surface, #1A1B20)';
+      } else {
+        resultElement.textContent = 'Nenhuma cidade encontrada com esse nome.';
+        resultElement.style.color = 'var(--md-sys-color-on-surface-variant, #44474F)';
+      }
+    } catch (error) {
+      // Tratar erros
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      resultElement.textContent = `Erro ao buscar cidade: ${errorMessage}`;
+      resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
+    } finally {
+      // Reabilitar input e botão
+      searchIcon.disabled = false;
+      input.disabled = false;
     }
   };
 
@@ -117,5 +182,6 @@ if (app) {
   inputWrapper.appendChild(input);
   inputWrapper.appendChild(searchIcon);
   container.appendChild(inputWrapper);
+  container.appendChild(resultElement);
   app.appendChild(container);
 }
