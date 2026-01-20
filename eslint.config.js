@@ -55,11 +55,11 @@ export default [
     settings: {
       'import/resolver': {
         typescript: {
-          project: './tsconfig.json',
           alwaysTryTypes: true,
+          project: './tsconfig.json',
         },
         node: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
         },
       },
       'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
