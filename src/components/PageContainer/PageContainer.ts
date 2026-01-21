@@ -3,6 +3,8 @@
  * Container principal da aplicação com elevation do Material Design 3
  */
 
+import { mockGeoApi, mockWeatherApi } from '../../mocks/weatherApiMocks.js';
+
 export function createPageContainer(): HTMLDivElement {
   // Container principal com elevation
   const pageContainer = document.createElement('div');
@@ -11,9 +13,11 @@ export function createPageContainer(): HTMLDivElement {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    min-height: 100vh;
     padding: 2rem;
     background-color: var(--md-sys-color-background);
+    width: 100%;
+    max-width: 500px;
+    margin: 1rem auto 0;
     /* Material Design 3 Elevation Level 1 */
     box-shadow:
       0px 1px 2px 0px rgba(0, 0, 0, 0.3),
@@ -212,10 +216,13 @@ export function createPageContainer(): HTMLDivElement {
       return;
     }
 
-    // Obter API key do ambiente
+    // Verificar se deve usar mocks
+    const useMockApi = import.meta.env.VITE_USE_MOCK_API === 'true';
+
+    // Obter API key do ambiente (não obrigatória se usar mocks)
     const apiKey = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
 
-    if (!apiKey) {
+    if (!useMockApi && !apiKey) {
       cityLabel.style.display = 'none';
       temperatureCard.style.display = 'none';
       detailsCardsContainer.style.display = 'none';
@@ -236,19 +243,27 @@ export function createPageContainer(): HTMLDivElement {
     input.disabled = true;
 
     try {
-      // Primeira requisição: buscar coordenadas da cidade
-      const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=5&appid=${apiKey}`;
+      let geoData;
 
-      resultElement.textContent = 'Buscando cidade...';
-      const geoResponse = await fetch(geoUrl);
+      if (useMockApi) {
+        // Usar dados mockados
+        resultElement.textContent = 'Buscando cidade...';
+        geoData = await mockGeoApi(cityName);
+      } else {
+        // Primeira requisição: buscar coordenadas da cidade
+        const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=5&appid=${apiKey}`;
 
-      if (!geoResponse.ok) {
-        throw new Error(
-          `Erro na requisição de geolocalização: ${geoResponse.status} ${geoResponse.statusText}`,
-        );
+        resultElement.textContent = 'Buscando cidade...';
+        const geoResponse = await fetch(geoUrl);
+
+        if (!geoResponse.ok) {
+          throw new Error(
+            `Erro na requisição de geolocalização: ${geoResponse.status} ${geoResponse.statusText}`,
+          );
+        }
+
+        geoData = await geoResponse.json();
       }
-
-      const geoData = await geoResponse.json();
 
       // Verificar se encontrou resultados
       if (!Array.isArray(geoData) || geoData.length === 0) {
@@ -283,17 +298,25 @@ export function createPageContainer(): HTMLDivElement {
 
       // Segunda requisição: buscar dados do clima
       resultElement.textContent = 'Buscando dados do clima...';
-      const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&exclude=minutely,hourly,daily,alerts`;
 
-      const weatherResponse = await fetch(weatherUrl);
+      let weatherData;
 
-      if (!weatherResponse.ok) {
-        throw new Error(
-          `Erro na requisição do clima: ${weatherResponse.body} ${weatherResponse.status} ${weatherResponse.statusText}`,
-        );
+      if (useMockApi) {
+        // Usar dados mockados
+        weatherData = await mockWeatherApi(lat, lon);
+      } else {
+        const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&exclude=minutely,hourly,daily,alerts`;
+
+        const weatherResponse = await fetch(weatherUrl);
+
+        if (!weatherResponse.ok) {
+          throw new Error(
+            `Erro na requisição do clima: ${weatherResponse.body} ${weatherResponse.status} ${weatherResponse.statusText}`,
+          );
+        }
+
+        weatherData = await weatherResponse.json();
       }
-
-      const weatherData = await weatherResponse.json();
 
       // Exibir temperatura atual e detalhes
       if (weatherData.current && typeof weatherData.current.temp === 'number') {
