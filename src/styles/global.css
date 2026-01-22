@@ -21,10 +21,10 @@ html {
 
 body {
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--md-sys-color-background);
-  color: var(--md-sys-color-on-background);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
   line-height: 1.5;
   min-height: 100vh;
   transition:

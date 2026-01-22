@@ -14,7 +14,7 @@ export function createPageContainer(): HTMLDivElement {
     align-items: center;
     justify-content: flex-start;
     padding: 2rem;
-    background-color: var(--md-sys-color-background);
+    background-color: var(--md-sys-color-container-low);
     width: 100%;
     max-width: 500px;
     margin: 1rem auto 0;
@@ -22,7 +22,7 @@ export function createPageContainer(): HTMLDivElement {
     box-shadow:
       0px 1px 2px 0px rgba(0, 0, 0, 0.3),
       0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-    border-radius: 0;
+    border-radius: 1rem;
     position: relative;
   `;
 
@@ -102,8 +102,9 @@ export function createPageContainer(): HTMLDivElement {
     padding: 1.5rem;
     max-width: 400px;
     width: 100%;
-    background-color: var(--md-sys-color-surface-container, #EDEDF4);
-    border-radius: 12px;
+    background-color: var(--md-sys-color-surface-container-low);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+    border-radius: 0.75rem;
     text-align: center;
     display: none;
   `;
@@ -147,8 +148,9 @@ export function createPageContainer(): HTMLDivElement {
       flex: 1;
       min-width: 110px;
       padding: 1rem;
-      background-color: var(--md-sys-color-surface-container, #EDEDF4);
-      border-radius: 8px;
+      background-color: var(--md-sys-color-surface-container-low);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+      border-radius: 0.75rem;
       text-align: center;
     `;
 
