@@ -1,0 +1,24 @@
+.card {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  background-color: var(--md-sys-color-surface-container-low);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 0.75rem;
+  text-align: center;
+  display: none;
+}
+
+.value {
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--md-sys-color-primary, #435e91);
+  line-height: 1;
+}
+
+.label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant, #44474f);
+}
