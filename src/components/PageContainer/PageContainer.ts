@@ -5,26 +5,12 @@
 
 import { createPageContainerContent } from '../PageContainerContent/index.js';
 
+import styles from './PageContainer.module.css';
+
 export function createPageContainer(): HTMLDivElement {
   // Container principal com elevation
   const pageContainer = document.createElement('div');
-  pageContainer.style.cssText = `
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 2rem;
-    background-color: var(--md-sys-color-container-low);
-    width: 100%;
-    max-width: 500px;
-    margin: 1rem auto 0;
-    /* Material Design 3 Elevation Level 1 */
-    box-shadow:
-      0px 1px 2px 0px rgba(0, 0, 0, 0.3),
-      0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-    border-radius: 1rem;
-    position: relative;
-  `;
+  pageContainer.className = styles.pageContainer;
 
   // Criar e adicionar o conteúdo do container
   createPageContainerContent(pageContainer);
