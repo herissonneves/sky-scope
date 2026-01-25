@@ -48,7 +48,7 @@
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/sky-scope.git
+git clone https://github.com/herissonneves/sky-scope.git
 
 # Entre no diretório
 cd sky-scope
@@ -175,19 +175,6 @@ pnpm test:coverage
 # Testes em modo watch
 pnpm test:watch
 ```
-
----
-
-## 🚀 Deploy
-
-O projeto está configurado para deploy automático em:
-
-- **Vercel:** [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/seu-usuario/sky-scope)
-- **Netlify:** [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/seu-usuario/sky-scope)
-
-### Variáveis de Ambiente
-
-Não esqueça de configurar a variável `VITE_WEATHER_API_KEY` no painel do serviço de deploy.
 
 ---
 
