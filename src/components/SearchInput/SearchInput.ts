@@ -3,6 +3,8 @@
  * Input de busca com ícone de lupa clicável
  */
 
+import styles from './SearchInput.module.css';
+
 export interface SearchInputElements {
   wrapper: HTMLDivElement;
   input: HTMLInputElement;
@@ -12,51 +14,19 @@ export interface SearchInputElements {
 export function createSearchInput(): SearchInputElements {
   // Container do input com ícone
   const inputWrapper = document.createElement('div');
-  inputWrapper.style.cssText = `
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-  `;
+  inputWrapper.className = styles.wrapper;
 
   // Caixa de texto
   const input = document.createElement('input');
   input.type = 'text';
   input.placeholder = 'Digite o nome da cidade...';
-  input.style.cssText = `
-    width: 100%;
-    padding: 0.75rem 3rem 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid var(--md-sys-color-outline, #74777F);
-    border-radius: 8px;
-    background-color: var(--md-sys-color-surface, #F9F9FF);
-    color: var(--md-sys-color-on-surface, #1A1B20);
-    outline: none;
-    transition: border-color 0.2s ease;
-    box-sizing: border-box;
-  `;
+  input.className = styles.input;
 
   // Ícone de lupa (SVG)
   const searchIcon = document.createElement('button');
   searchIcon.type = 'button';
   searchIcon.setAttribute('aria-label', 'Pesquisar cidade');
-  searchIcon.style.cssText = `
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2rem;
-    height: 2rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    color: var(--md-sys-color-on-surface-variant, #44474F);
-    transition: color 0.2s ease;
-    border-radius: 4px;
-  `;
+  searchIcon.className = styles.searchIcon;
 
   // SVG da lupa
   searchIcon.innerHTML = `
