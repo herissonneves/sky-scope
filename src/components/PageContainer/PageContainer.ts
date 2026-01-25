@@ -3,7 +3,7 @@
  * Container principal da aplicação com elevation do Material Design 3
  */
 
-import { createPageContainerContent } from './PageContainerContent.js';
+import { createPageContainerContent } from '../PageContainerContent/index.js';
 
 export function createPageContainer(): HTMLDivElement {
   // Container principal com elevation
