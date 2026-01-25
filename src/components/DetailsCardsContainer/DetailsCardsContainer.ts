@@ -5,6 +5,8 @@
 
 import { createDetailCard, type DetailCardElements } from '../DetailCard/index.js';
 
+import styles from './DetailsCardsContainer.module.css';
+
 export interface DetailsCardsContainerElements {
   container: HTMLDivElement;
   feelsLikeCard: DetailCardElements;
@@ -15,16 +17,7 @@ export interface DetailsCardsContainerElements {
 export function createDetailsCardsContainer(): DetailsCardsContainerElements {
   // Container para os cards menores
   const detailsCardsContainer = document.createElement('div');
-  detailsCardsContainer.style.cssText = `
-    margin-top: 1rem;
-    max-width: 400px;
-    width: 100%;
-    display: none;
-    flex-direction: row;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    justify-content: center;
-  `;
+  detailsCardsContainer.className = styles.container;
 
   // Cards de detalhes
   const feelsLikeCard = createDetailCard('Sensação');
