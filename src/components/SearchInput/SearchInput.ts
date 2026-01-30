@@ -14,19 +14,19 @@ export interface SearchInputElements {
 export function createSearchInput(): SearchInputElements {
   // Container do input com ícone
   const inputWrapper = document.createElement('div');
-  inputWrapper.className = styles.wrapper;
+  inputWrapper.className = styles.searchInput;
 
   // Caixa de texto
   const input = document.createElement('input');
   input.type = 'text';
   input.placeholder = 'Digite o nome da cidade...';
-  input.className = styles.input;
+  input.className = styles.searchInput__input;
 
   // Ícone de lupa (SVG)
   const searchIcon = document.createElement('button');
   searchIcon.type = 'button';
   searchIcon.setAttribute('aria-label', 'Pesquisar cidade');
-  searchIcon.className = styles.searchIcon;
+  searchIcon.className = styles.searchInput__searchIcon;
 
   // SVG da lupa
   searchIcon.innerHTML = `

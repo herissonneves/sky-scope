@@ -1,12 +1,17 @@
+/**
+ * ResultElement - BEM
+ * Block: resultElement
+ */
+
 .resultElement {
   margin-top: 1rem;
   padding: 1rem;
-  max-width: 400px;
+  max-width: 25rem;
   width: 100%;
   font-size: 0.875rem;
   color: var(--md-sys-color-on-surface, #1a1b20);
   background-color: var(--md-sys-color-surface-container, #ededf4);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   word-wrap: break-word;
   white-space: pre-wrap;
   min-height: 1.5rem;

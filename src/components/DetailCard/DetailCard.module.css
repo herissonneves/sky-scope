@@ -1,14 +1,22 @@
-.card {
+/**
+ * DetailCard - BEM
+ * Block: detailCard
+ * Elements: __value, __label
+ */
+
+.detailCard {
   flex: 1;
-  min-width: 110px;
+  min-width: 6.875rem;
   padding: 1rem;
   background-color: var(--md-sys-color-surface-container-low);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 0.0625rem 0.125rem 0 rgba(0, 0, 0, 0.3),
+    0 0.0625rem 0.1875rem 0.0625rem rgba(0, 0, 0, 0.15);
   border-radius: 0.75rem;
   text-align: center;
 }
 
-.value {
+.detailCard__value {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--md-sys-color-primary, #435e91);
@@ -16,9 +24,9 @@
   margin-bottom: 0.25rem;
 }
 
-.label {
+.detailCard__label {
   font-size: 0.75rem;
   color: var(--md-sys-color-on-surface-variant, #44474f);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
 }

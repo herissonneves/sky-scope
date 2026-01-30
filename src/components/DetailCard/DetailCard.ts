@@ -12,13 +12,13 @@ export interface DetailCardElements {
 
 export function createDetailCard(label: string): DetailCardElements {
   const card = document.createElement('div');
-  card.className = styles.card;
+  card.className = styles.detailCard;
 
   const value = document.createElement('div');
-  value.className = styles.value;
+  value.className = styles.detailCard__value;
 
   const labelElement = document.createElement('div');
-  labelElement.className = styles.label;
+  labelElement.className = styles.detailCard__label;
   labelElement.textContent = label;
 
   card.appendChild(value);

@@ -13,13 +13,13 @@ export interface TemperatureCardElements {
 export function createTemperatureCard(): TemperatureCardElements {
   // Card para exibir temperatura
   const temperatureCard = document.createElement('div');
-  temperatureCard.className = styles.card;
+  temperatureCard.className = styles.temperatureCard;
 
   const temperatureValue = document.createElement('div');
-  temperatureValue.className = styles.value;
+  temperatureValue.className = styles.temperatureCard__value;
 
   const temperatureLabel = document.createElement('div');
-  temperatureLabel.className = styles.label;
+  temperatureLabel.className = styles.temperatureCard__label;
   temperatureLabel.textContent = 'Temperatura Atual';
 
   temperatureCard.appendChild(temperatureValue);

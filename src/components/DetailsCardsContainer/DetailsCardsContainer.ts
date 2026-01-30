@@ -17,7 +17,7 @@ export interface DetailsCardsContainerElements {
 export function createDetailsCardsContainer(): DetailsCardsContainerElements {
   // Container para os cards menores
   const detailsCardsContainer = document.createElement('div');
-  detailsCardsContainer.className = styles.container;
+  detailsCardsContainer.className = styles.detailsCardsContainer;
 
   // Cards de detalhes
   const feelsLikeCard = createDetailCard('Sensação');

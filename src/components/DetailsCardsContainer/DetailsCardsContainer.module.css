@@ -1,6 +1,11 @@
-.container {
+/**
+ * DetailsCardsContainer - BEM
+ * Block: detailsCardsContainer
+ */
+
+.detailsCardsContainer {
   margin-top: 1rem;
-  max-width: 400px;
+  max-width: 25rem;
   width: 100%;
   display: none;
   flex-direction: row;
