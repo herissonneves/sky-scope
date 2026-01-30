@@ -3,7 +3,7 @@
  * Base styles and resets for the application
  */
 
-@import './variables.css';
+@import './variables/index.css';
 
 *,
 *::before,

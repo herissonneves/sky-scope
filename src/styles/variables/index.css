@@ -1,0 +1,12 @@
+/**
+ * Material Design 3 - Design Tokens
+ * Generated from Material Theme Builder | Seed: #4F8DF6
+ * Light/dark themes with low, medium and high contrast variants
+ */
+
+@import './themes/light.css';
+@import './themes/light-medium-contrast.css';
+@import './themes/light-high-contrast.css';
+@import './themes/dark.css';
+@import './themes/dark-medium-contrast.css';
+@import './themes/dark-high-contrast.css';
