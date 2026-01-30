@@ -3,15 +3,14 @@
  * Conteúdo interno do PageContainer (input, cards, lógica de busca)
  */
 
-import {
-  validateApiKey,
-  fetchCityWeather,
-} from '../../lib/index.js';
+import { validateApiKey, fetchCityWeather } from '../../lib/index.js';
 import { createCityLabel } from '../CityLabel/index.js';
 import { createDetailsCardsContainer } from '../DetailsCardsContainer/index.js';
 import { createResultElement } from '../ResultElement/index.js';
 import { createSearchInput } from '../SearchInput/index.js';
 import { createTemperatureCard } from '../TemperatureCard/index.js';
+
+import styles from './PageContainerContent.module.css';
 
 export function createPageContainerContent(container: HTMLDivElement): void {
   // Criar componente de input de busca
@@ -34,44 +33,74 @@ export function createPageContainerContent(container: HTMLDivElement): void {
   // Criar componente de elemento de resultado/erro
   const resultElement = createResultElement();
 
+  // Classes BEM (estilos condicionais)
+  const c = {
+    cityLabel: styles.pageContainerContent__cityLabel,
+    cityLabelVisible: styles.pageContainerContent__cityLabel_visible,
+    temperatureCard: styles.pageContainerContent__temperatureCard,
+    temperatureCardVisible: styles.pageContainerContent__temperatureCard_visible,
+    detailsCards: styles.pageContainerContent__detailsCards,
+    detailsCardsVisible: styles.pageContainerContent__detailsCards_visible,
+    result: styles.pageContainerContent__result,
+    resultVisible: styles.pageContainerContent__result_visible,
+    resultError: styles.pageContainerContent__result_error,
+    resultInfo: styles.pageContainerContent__result_info,
+    resultDefault: styles.pageContainerContent__result_default,
+    input: styles.pageContainerContent__input,
+    inputFocused: styles.pageContainerContent__input_focused,
+    searchIcon: styles.pageContainerContent__searchIcon,
+    searchIconFocused: styles.pageContainerContent__searchIcon_focused,
+    searchIconHover: styles.pageContainerContent__searchIcon_hover,
+  };
+  const resultModifiers = [c.resultError, c.resultInfo, c.resultDefault];
+
+  // Aplicar classes base - elementos ocultos por padrão
+  cityLabel.classList.add(c.cityLabel);
+  temperatureCard.classList.add(c.temperatureCard);
+  detailsCardsContainer.classList.add(c.detailsCards);
+  resultElement.classList.add(c.result);
+  input.classList.add(c.input);
+  searchIcon.classList.add(c.searchIcon);
+
+  const hideContentPanels = () => {
+    cityLabel.classList.remove(c.cityLabelVisible);
+    temperatureCard.classList.remove(c.temperatureCardVisible);
+    detailsCardsContainer.classList.remove(c.detailsCardsVisible);
+  };
+
+  const showResultMessage = (text: string, modifier: string) => {
+    hideContentPanels();
+    resultElement.classList.remove(...resultModifiers);
+    resultElement.classList.add(modifier, c.resultVisible);
+    resultElement.textContent = text;
+  };
+
+  const hideResult = () => {
+    resultElement.classList.remove(c.resultVisible, ...resultModifiers);
+  };
+
   // Função de pesquisa
   const handleSearch = async () => {
     const cityName = input.value.trim();
 
     if (!cityName) {
-      cityLabel.style.display = 'none';
-      temperatureCard.style.display = 'none';
-      detailsCardsContainer.style.display = 'none';
-      resultElement.textContent = 'Por favor, digite o nome de uma cidade.';
-      resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
-      resultElement.style.display = 'block';
+      showResultMessage('Por favor, digite o nome de uma cidade.', c.resultError);
       return;
     }
 
     // Validar API key
     const apiValidation = validateApiKey();
     if (!apiValidation.valid) {
-      cityLabel.style.display = 'none';
-      temperatureCard.style.display = 'none';
-      detailsCardsContainer.style.display = 'none';
-      resultElement.textContent = apiValidation.error || 'Erro desconhecido';
-      resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
-      resultElement.style.display = 'block';
+      showResultMessage(apiValidation.error || 'Erro desconhecido', c.resultError);
       return;
     }
 
     // Esconder elementos anteriores e mostrar estado de carregamento
-    cityLabel.style.display = 'none';
-    temperatureCard.style.display = 'none';
-    detailsCardsContainer.style.display = 'none';
-    resultElement.textContent = 'Buscando...';
-    resultElement.style.color = 'var(--md-sys-color-on-surface, #1A1B20)';
-    resultElement.style.display = 'block';
+    showResultMessage('Buscando...', c.resultDefault);
     searchIcon.disabled = true;
     input.disabled = true;
 
     try {
-      // Buscar dados da cidade e clima usando a lib
       resultElement.textContent = 'Buscando cidade...';
       const { geo, weather: weatherData } = await fetchCityWeather(cityName);
 
@@ -85,14 +114,14 @@ export function createPageContainerContent(container: HTMLDivElement): void {
       if (state) locationParts.push(state);
       if (country) locationParts.push(country);
       cityLabel.textContent = locationParts.join(', ');
-      cityLabel.style.display = 'block';
+      cityLabel.classList.add(c.cityLabelVisible);
 
       // Exibir temperatura atual e detalhes
       if (weatherData.current && typeof weatherData.current.temp === 'number') {
         // Converter de Kelvin para Celsius
         const tempCelsius = Math.round(weatherData.current.temp - 273.15);
         temperatureValue.textContent = `${tempCelsius}°C`;
-        temperatureCard.style.display = 'block';
+        temperatureCard.classList.add(c.temperatureCardVisible);
 
         // Preencher cards de detalhes
         if (typeof weatherData.current.feels_like === 'number') {
@@ -116,35 +145,17 @@ export function createPageContainerContent(container: HTMLDivElement): void {
           windSpeedCard.value.textContent = 'N/A';
         }
 
-        detailsCardsContainer.style.display = 'flex';
-        detailsCardsContainer.style.flexDirection = 'row';
-        resultElement.style.display = 'none';
+        detailsCardsContainer.classList.add(c.detailsCardsVisible);
+        hideResult();
       } else {
-        cityLabel.style.display = 'none';
-        temperatureCard.style.display = 'none';
-        detailsCardsContainer.style.display = 'none';
-        resultElement.textContent = 'Dados de temperatura não disponíveis.';
-        resultElement.style.color = 'var(--md-sys-color-on-surface-variant, #44474F)';
-        resultElement.style.display = 'block';
+        showResultMessage('Dados de temperatura não disponíveis.', c.resultInfo);
       }
     } catch (error) {
-      // Tratar erros
-      cityLabel.style.display = 'none';
-      temperatureCard.style.display = 'none';
-      detailsCardsContainer.style.display = 'none';
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-
-      // Verificar se é erro de cidade não encontrada
-      if (errorMessage.includes('Nenhuma cidade encontrada')) {
-        resultElement.textContent = errorMessage;
-        resultElement.style.color = 'var(--md-sys-color-on-surface-variant, #44474F)';
-      } else {
-        resultElement.textContent = `Erro ao buscar dados: ${errorMessage}`;
-        resultElement.style.color = 'var(--md-sys-color-error, #BA1A1A)';
-      }
-      resultElement.style.display = 'block';
+      const isNotFound = errorMessage.includes('Nenhuma cidade encontrada');
+      const text = isNotFound ? errorMessage : `Erro ao buscar dados: ${errorMessage}`;
+      showResultMessage(text, isNotFound ? c.resultInfo : c.resultError);
     } finally {
-      // Reabilitar input e botão
       searchIcon.disabled = false;
       input.disabled = false;
     }
@@ -152,13 +163,13 @@ export function createPageContainerContent(container: HTMLDivElement): void {
 
   // Eventos de foco no input
   input.addEventListener('focus', () => {
-    input.style.borderColor = 'var(--md-sys-color-primary, #435E91)';
-    searchIcon.style.color = 'var(--md-sys-color-primary, #435E91)';
+    input.classList.add(c.inputFocused);
+    searchIcon.classList.add(c.searchIconFocused);
   });
 
   input.addEventListener('blur', () => {
-    input.style.borderColor = 'var(--md-sys-color-outline, #74777F)';
-    searchIcon.style.color = 'var(--md-sys-color-on-surface-variant, #44474F)';
+    input.classList.remove(c.inputFocused);
+    searchIcon.classList.remove(c.searchIconFocused);
   });
 
   // Pesquisar ao pressionar Enter
@@ -174,16 +185,11 @@ export function createPageContainerContent(container: HTMLDivElement): void {
 
   // Hover no ícone
   searchIcon.addEventListener('mouseenter', () => {
-    searchIcon.style.color = 'var(--md-sys-color-primary, #435E91)';
-    searchIcon.style.backgroundColor = 'var(--md-sys-color-primary-container, #D8E2FF)';
+    searchIcon.classList.add(c.searchIconHover);
   });
 
   searchIcon.addEventListener('mouseleave', () => {
-    const isFocused = document.activeElement === input;
-    searchIcon.style.color = isFocused
-      ? 'var(--md-sys-color-primary, #435E91)'
-      : 'var(--md-sys-color-on-surface-variant, #44474F)';
-    searchIcon.style.backgroundColor = 'transparent';
+    searchIcon.classList.remove(c.searchIconHover);
   });
 
   // Montar estrutura

@@ -1,0 +1,78 @@
+/**
+ * PageContainerContent - estilos condicionais (BEM)
+ * Block: pageContainerContent
+ * Elements: cityLabel, temperatureCard, detailsCards, result
+ * Modifiers: visible, error, info, default
+ */
+
+/* City label - oculto por padrão */
+.pageContainerContent__cityLabel {
+  display: none;
+}
+
+.pageContainerContent__cityLabel_visible {
+  display: block;
+}
+
+/* Temperature card - oculto por padrão */
+.pageContainerContent__temperatureCard {
+  display: none;
+}
+
+.pageContainerContent__temperatureCard_visible {
+  display: block;
+}
+
+/* Details cards container - oculto por padrão */
+.pageContainerContent__detailsCards {
+  display: none;
+}
+
+.pageContainerContent__detailsCards_visible {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Result element (mensagens de estado/erro) - oculto por padrão */
+.pageContainerContent__result {
+  display: none;
+}
+
+.pageContainerContent__result_visible {
+  display: block;
+}
+
+.pageContainerContent__result_error {
+  color: var(--md-sys-color-error, #ba1a1a);
+}
+
+.pageContainerContent__result_info {
+  color: var(--md-sys-color-on-surface-variant, #44474f);
+}
+
+.pageContainerContent__result_default {
+  color: var(--md-sys-color-on-surface, #1a1b20);
+}
+
+/* Input de busca - estados de foco (BEM) */
+.pageContainerContent__input {
+  border-color: var(--md-sys-color-outline, #74777f);
+}
+
+.pageContainerContent__input_focused {
+  border-color: var(--md-sys-color-primary, #435e91);
+}
+
+/* Ícone de busca - estados de foco e hover (BEM) */
+.pageContainerContent__searchIcon {
+  color: var(--md-sys-color-on-surface-variant, #44474f);
+}
+
+.pageContainerContent__searchIcon_focused {
+  color: var(--md-sys-color-primary, #435e91);
+}
+
+.pageContainerContent__searchIcon_hover {
+  color: var(--md-sys-color-primary, #435e91);
+  background-color: var(--md-sys-color-primary-container, #d8e2ff);
+}
