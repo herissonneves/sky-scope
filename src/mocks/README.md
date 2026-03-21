@@ -1,86 +1,70 @@
-# 🧪 Mocks da API OpenWeatherMap
+# OpenWeatherMap mocks
 
-Este diretório contém dados mockados para testes da aplicação sem precisar fazer chamadas reais à API.
+This folder holds mock responses so you can run the app without calling the real OpenWeatherMap APIs. When mock mode is on, `fetchCityCoordinates`, `fetchWeatherData`, and `fetchCityWeather` (see `src/lib/weatherApi.ts`) delegate to the helpers in `weatherApiMocks.ts` instead of the network.
 
-## 📋 Como usar
+## Enabling mock mode
 
-### Ativar modo de mock
-
-Adicione a seguinte variável no seu arquivo `.env`:
+Set the following in your `.env` file (see `.env.example`):
 
 ```env
 VITE_USE_MOCK_API=true
 ```
 
-Quando essa variável estiver definida como `true`, a aplicação usará os dados mockados em vez de fazer requisições reais à API.
+The flag is read at build time via Vite (`import.meta.env`). You do not need `VITE_OPEN_WEATHER_API_KEY` for local UI flows while mocks are enabled.
 
-### Cidades disponíveis nos mocks
+## Supported city searches
 
-Os seguintes nomes de cidades funcionam nos mocks:
+Mock geocoding matches against each city’s `name` and `local_names.pt` / `local_names.en` (case-insensitive substring). These entries are defined in `mockGeoData`:
 
-- **Brasília** (ou "brasilia")
-- **São Paulo** (ou "sao paulo", "são paulo")
-- **Rio de Janeiro** (ou "rio de janeiro")
+| City           | Example queries                          |
+| -------------- | ---------------------------------------- |
+| Brasília       | `Brasília`, `brasilia`, `brasil`, …      |
+| São Paulo      | `São Paulo`, `sao paulo`, `paulo`, …     |
+| Rio de Janeiro | `Rio de Janeiro`, `rio`, `janeiro`, …    |
 
-Você pode buscar por qualquer parte do nome (ex: "brasil", "paulo", "rio").
+Unknown names return an empty list, same shape as the real geocoding API when there are no hits.
 
-### Dados mockados
+## What the mocks return
 
-#### API de Geolocalização (`geo/1.0/direct`)
+### Geocoding (`/geo/1.0/direct`)
 
-Retorna um array com informações de cidades incluindo:
+Array of objects shaped like the live API, including:
 
-- `name`: Nome da cidade
-- `local_names`: Nomes em diferentes idiomas
-- `lat`: Latitude
-- `lon`: Longitude
-- `country`: Código do país (BR)
-- `state`: Estado/Distrito
+- `name`, `local_names`, `lat`, `lon`, `country`, `state`
 
-#### API de Clima (`data/3.0/onecall`)
+### One Call 3.0 (`/data/3.0/onecall`)
 
-Retorna dados do clima atual incluindo:
+A `current` payload aligned with the types in `src/lib/types.ts`, e.g.:
 
-- `temp`: Temperatura em Kelvin (~25°C)
-- `feels_like`: Sensação térmica em Kelvin (~26°C)
-- `humidity`: Umidade relativa (~65%)
-- `wind_speed`: Velocidade do vento em m/s (~3.5 m/s = 12.6 km/h)
+- `temp`, `feels_like` — Kelvin (roughly 25–26 °C baseline before jitter)
+- `humidity` — percent
+- `wind_speed` — m/s (UI converts to km/h)
 
-**Nota:** Os dados de temperatura são gerados com pequenas variações aleatórias para simular diferentes condições climáticas.
+`mockWeatherApi` copies the static template, overrides `lat`/`lon` with the requested coordinates, and applies small random jitter to temperature, humidity, and wind so repeated searches do not look completely static.
 
-### Delay simulado
+### Simulated latency
 
-Os mocks incluem delays simulados para imitar o comportamento real da API:
+`simulateApiDelay` is used to mimic network latency:
 
-- Geolocalização: ~300ms
-- Dados do clima: ~400ms
+- Geocoding mock: ~300 ms  
+- Weather mock: ~400 ms  
 
-## 🔧 Estrutura dos arquivos
+## File layout
 
-- `weatherApiMocks.ts`: Contém os dados mockados e funções para simular as requisições
+| File                 | Role                                                |
+| -------------------- | --------------------------------------------------- |
+| `weatherApiMocks.ts` | Static fixtures, delay helper, `mockGeoApi` / `mockWeatherApi` |
 
-## 💡 Exemplo de uso
+## Quick start
 
-1. Configure o `.env`:
+1. Add `VITE_USE_MOCK_API=true` to `.env`.
+2. Run `pnpm dev`.
+3. Search for a supported city (e.g. **Brasília**).
 
-   ```env
-   VITE_USE_MOCK_API=true
-   ```
+## Why use mocks
 
-2. Inicie a aplicação:
-
-   ```bash
-   pnpm dev
-   ```
-
-3. Busque por uma das cidades disponíveis (ex: "Brasília")
-
-4. A aplicação usará os dados mockados automaticamente!
-
-## 🚀 Vantagens
-
-- ✅ Teste sem necessidade de API key
-- ✅ Respostas rápidas e consistentes
-- ✅ Não consome limites da API
-- ✅ Funciona offline
-- ✅ Ideal para desenvolvimento e testes
+- No API key required for local development  
+- Predictable, repeatable data  
+- No quota usage on OpenWeatherMap  
+- Works offline  
+- Useful for demos and automated/manual testing  

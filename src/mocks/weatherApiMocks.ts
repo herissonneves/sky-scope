@@ -3,7 +3,9 @@
  * Use VITE_USE_MOCK_API=true no .env para ativar
  */
 
-// Mock da resposta da API de geolocalização (geo/1.0/direct)
+import type { GeoLocationResult, WeatherData } from '../lib/types.js';
+
+/** Fixture list matching the Geocoding API 1.0 `direct` response shape (`GeoLocationResult[]`). */
 export const mockGeoData = [
   {
     name: 'Brasília',
@@ -42,9 +44,9 @@ export const mockGeoData = [
     country: 'BR',
     state: 'Rio de Janeiro',
   },
-];
+] as const satisfies readonly GeoLocationResult[];
 
-// Mock da resposta da API de clima (data/3.0/onecall)
+/** Static One Call 3.0 payload template (`WeatherData`); `lat` / `lon` are overwritten in `mockWeatherApi`. */
 export const mockWeatherData = {
   lat: -15.7934036,
   lon: -47.8823172,
@@ -54,15 +56,15 @@ export const mockWeatherData = {
     dt: 1705680000,
     sunrise: 1705656000,
     sunset: 1705702800,
-    temp: 298.15, // 25°C em Kelvin
-    feels_like: 299.15, // 26°C em Kelvin
+    temp: 298.15, // ~25°C in Kelvin
+    feels_like: 299.15, // ~26°C in Kelvin
     pressure: 1013,
     humidity: 65,
     dew_point: 290.15,
     uvi: 7.5,
     clouds: 20,
     visibility: 10000,
-    wind_speed: 3.5, // m/s (12.6 km/h)
+    wind_speed: 3.5, // m/s (~12.6 km/h)
     wind_deg: 180,
     wind_gust: 5.2,
     weather: [
@@ -74,20 +76,18 @@ export const mockWeatherData = {
       },
     ],
   },
-};
+} as const satisfies WeatherData;
 
-// Função para simular delay de requisição
 export const simulateApiDelay = (ms: number = 500): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-// Função para buscar dados mockados de geolocalização
-export const mockGeoApi = async (cityName: string) => {
+/** Simulates `GET /geo/1.0/direct` — same return type as the real API client. */
+export async function mockGeoApi(cityName: string): Promise<GeoLocationResult[]> {
   await simulateApiDelay(300);
 
   const normalizedCity = cityName.toLowerCase().trim();
 
-  // Buscar cidade que corresponde (parcial ou completa)
   const matches = mockGeoData.filter(
     (city) =>
       city.name.toLowerCase().includes(normalizedCity) ||
@@ -95,29 +95,25 @@ export const mockGeoApi = async (cityName: string) => {
       city.local_names?.en?.toLowerCase().includes(normalizedCity),
   );
 
-  if (matches.length === 0) {
-    return [];
-  }
+  return matches.length === 0 ? [] : [...matches];
+}
 
-  return matches;
-};
-
-// Função para buscar dados mockados do clima
-export const mockWeatherApi = async (lat: number, lon: number) => {
+/** Simulates One Call 3.0 current-only response — same shape as `fetchWeatherData` when mocked. */
+export async function mockWeatherApi(lat: number, lon: number): Promise<WeatherData> {
   await simulateApiDelay(400);
 
-  // Retornar dados mockados com coordenadas atualizadas
+  const base = mockWeatherData;
+
   return {
-    ...mockWeatherData,
+    ...base,
     lat,
     lon,
-    // Variações de temperatura baseadas em coordenadas (simulação)
     current: {
-      ...mockWeatherData.current,
-      temp: mockWeatherData.current.temp + (Math.random() * 10 - 5), // ±5°C de variação
-      feels_like: mockWeatherData.current.feels_like + (Math.random() * 10 - 5),
-      humidity: Math.round(mockWeatherData.current.humidity + (Math.random() * 20 - 10)), // ±10%
-      wind_speed: mockWeatherData.current.wind_speed + (Math.random() * 2 - 1), // ±1 m/s
+      ...base.current,
+      temp: base.current.temp + (Math.random() * 10 - 5),
+      feels_like: base.current.feels_like + (Math.random() * 10 - 5),
+      humidity: Math.round(base.current.humidity + (Math.random() * 20 - 10)),
+      wind_speed: base.current.wind_speed + (Math.random() * 2 - 1),
     },
   };
-};
+}
