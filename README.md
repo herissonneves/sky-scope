@@ -1,214 +1,155 @@
-# 🌤️ Sky Scope
+# Sky Scope
 
-> Aplicação web de clima feita em **React**, focada em velocidade, clareza e boa UX.
+A small weather web app built with **TypeScript** and **Vite**. Search for a city, show **current conditions** (temperature, feels-like, humidity, wind), and surface clear loading and error states.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vitejs.dev/)
 
 ---
 
-## 📋 Sobre o Projeto
+## Overview
 
-**Sky Scope** permite buscar cidades e exibir **clima atual** e **previsão de 5 dias**, com tratamento robusto de erros e base pronta para evoluir com cache, geolocalização e visualizações interativas.
+**Sky Scope** calls the [OpenWeatherMap](https://openweathermap.org/) **Geocoding API** and **One Call API 3.0** (current payload only). The UI is composed from plain DOM factories and **CSS Modules**, with global **design tokens** (light/dark and contrast variants) under `src/styles/variables/`.
 
-### ✨ Características Principais
+### Highlights
 
-- 🔍 **Busca inteligente** por nome da cidade
-- 🌡️ **Clima atual** com informações detalhadas
-- 📅 **Previsão de 5 dias** com temperaturas e condições
-- 📱 **Design responsivo** (mobile-first)
-- ⚡ **Performance otimizada** com estados de loading
-- 🛡️ **Tratamento robusto** de erros e casos extremos
-- ♿ **Acessibilidade** com navegação por teclado e bom contraste
+- City search with geocoding, then current weather for the first match
+- Loading and error messaging (missing API key, empty results, network failures)
+- Responsive layout and keyboard-friendly search control
+- Optional **mock mode** for local development without a key or network (see [`src/mocks/README.md`](src/mocks/README.md))
 
 ---
 
-## 🚀 Stack Tecnológica
+## Tech stack
 
-- **Frontend:** React 18+ com TypeScript
-- **Estilização:** CSS Modules (ou Tailwind CSS)
-- **API de Clima:** OpenWeatherMap API
-- **Gerenciador de Pacotes:** pnpm
-- **Linting:** ESLint 9.x (flat config)
-- **Formatação:** Prettier
-- **Deploy:** Vercel / Netlify / GitHub Pages
+| Area | Choice |
+|------|--------|
+| Runtime / bundler | Vite 7 |
+| Language | TypeScript 5.9 |
+| UI | Vanilla DOM + CSS Modules |
+| Theming | CSS custom properties (Material-style tokens) |
+| Weather data | OpenWeatherMap (Geocoding 1.0 + One Call 3.0) |
+| Package manager | pnpm 10+ |
+| Lint / format | ESLint 9 (flat config), Prettier |
 
 ---
 
-## 📦 Instalação e Uso
+## Prerequisites
 
-### Pré-requisitos
+- **Node.js** 18+
+- **pnpm** 10+ (recommended; the repo pins a `packageManager` field in `package.json`)
+- An OpenWeatherMap **API key** when not using mocks ([create an account](https://openweathermap.org/api))
 
-- Node.js 18+
-- pnpm 10+ (ou npm/yarn)
-- Chave de API do [OpenWeatherMap](https://openweathermap.org/api)
+---
 
-### Instalação
+## Setup
 
 ```bash
-# Clone o repositório
 git clone https://github.com/herissonneves/sky-scope.git
-
-# Entre no diretório
 cd sky-scope
-
-# Instale as dependências
 pnpm install
 ```
 
-### Configuração da API
+### Environment variables
 
-1. Crie uma conta gratuita no [OpenWeatherMap](https://openweathermap.org/api)
-2. Gere sua chave de API
-3. Crie um arquivo `.env` na raiz do projeto:
+Copy `.env.example` to `.env` and set:
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_OPEN_WEATHER_API_KEY` | OpenWeatherMap API key (not required when mocks are enabled) |
+| `VITE_USE_MOCK_API` | Set to `true` to use built-in mock responses instead of the network |
 
 ```env
-VITE_WEATHER_API_KEY=sua_chave_api_aqui
+VITE_OPEN_WEATHER_API_KEY=your_key_here
+VITE_USE_MOCK_API=false
 ```
 
-### Executar Localmente
+---
+
+## Scripts
 
 ```bash
-# Modo de desenvolvimento
-pnpm dev
-
-# Build de produção
-pnpm build
-
-# Preview do build
-pnpm preview
-
-# Lint
-pnpm lint
-
-# Formatação
-pnpm format
+pnpm dev          # dev server (default: http://localhost:5173)
+pnpm build        # production build → dist/
+pnpm preview      # serve the production build locally
+pnpm lint         # ESLint
+pnpm lint:fix     # ESLint with --fix
+pnpm format       # Prettier (write)
+pnpm test         # placeholder (no test runner wired yet)
 ```
 
-A aplicação estará disponível em `http://localhost:5173`
+---
+
+## Features (current)
+
+- **Search** — trim input, disable controls while fetching, show status text
+- **Location label** — city (prefer `local_names.pt`), state, country when available
+- **Current weather** — temperature (Kelvin from API converted to °C in the UI), feels-like, humidity, wind (m/s → km/h)
+- **Mocks** — deterministic fixtures + simulated latency; documented in [`src/mocks/README.md`](src/mocks/README.md)
 
 ---
 
-## 🎯 Funcionalidades
+## Roadmap (ideas)
 
-### ✅ Implementadas
-
-#### Busca & Localização
-
-- ✅ Buscar clima por nome da cidade
-- ✅ Nova busca sem recarregar a página
-- ✅ Exibição clara de cidade/país consultados
-
-#### Clima Atual
-
-- ✅ Condições atuais (descrição, ícone, temperatura)
-- ✅ Informações essenciais (sensação térmica, umidade, vento)
-- ✅ Estados de carregamento bem definidos
-
-#### Previsão 5 Dias
-
-- ✅ Previsão para os próximos 5 dias
-- ✅ Data, temperatura min/máx e condição
-- ✅ Layout responsivo
-
-#### Erros & Robustez
-
-- ✅ Tratamento de erros de rede e limites de API
-- ✅ Tratamento de cidade não encontrada
-- ✅ Mensagens de erro claras
-- ✅ Prevenção de estados quebrados
-
-#### UX & Acessibilidade
-
-- ✅ Interface responsiva (mobile-first)
-- ✅ Boa hierarquia visual
-- ✅ Labels em inputs
-- ✅ Navegação por teclado
-- ✅ Estados de foco visíveis
-- ✅ Contraste legível
-
-### 🚧 Planejadas (Roadmap)
-
-- [ ] **Caching** de respostas com TTL (localStorage/sessionStorage)
-- [ ] **Geolocalização** automática (com permissão do usuário)
-- [ ] **Gráficos interativos** (linha de temperatura)
-- [ ] Toggle de unidades (°C/°F)
-- [ ] Histórico de cidades recentes
-- [ ] Skeleton loading e microinterações
-- [ ] Suporte a múltiplos idiomas (i18n)
-- [ ] Tema claro/escuro
+- Response caching (e.g. `localStorage` with TTL)
+- Browser geolocation as an alternative to text search
+- Hourly or multi-day sections if the API surface expands
+- Unit / integration tests (replace the `pnpm test` stub)
+- Optional `units=metric` on API calls and UI toggle (°C / °F)
 
 ---
 
-## 📁 Estrutura do Projeto
+## Project structure
 
-```plaintext
+```text
 sky-scope/
-├── src/
-│   ├── components/     # Componentes React
-│   ├── services/       # Serviços de API
-│   ├── hooks/          # Custom hooks
-│   ├── types/          # Tipos TypeScript
-│   ├── utils/          # Funções utilitárias
-│   ├── styles/         # Estilos globais
-│   └── index.ts        # Entry point
-├── public/             # Assets estáticos
-├── dist/               # Build de produção
-├── .eslintrc           # Configuração ESLint
-├── .prettierrc         # Configuração Prettier
-├── tsconfig.json       # Configuração TypeScript
-└── package.json        # Dependências e scripts
+├── index.html
+├── vite.config.ts
+├── eslint.config.js
+├── tsconfig.json
+├── public/
+└── src/
+    ├── main.ts                 # App bootstrap
+    ├── vite-env.d.ts
+    ├── components/             # DOM factories + *.module.css
+    ├── lib/
+    │   ├── weatherApi.ts       # Public weather + geocode helpers
+    │   ├── types.ts            # API-aligned TypeScript types
+    │   └── openWeather/        # Config, URL builders, fetch helper
+    ├── mocks/                  # Mock API responses (optional)
+    └── styles/
+        ├── global.css
+        └── variables/          # Theme token layers
 ```
 
 ---
 
-## 🧪 Testes
+## Contributing
 
-```bash
-# Executar testes
-pnpm test
-
-# Testes com coverage
-pnpm test:coverage
-
-# Testes em modo watch
-pnpm test:watch
-```
+1. Fork the repository  
+2. Create a branch (`git checkout -b feature/your-feature`)  
+3. Commit with clear messages (Conventional Commits are welcome)  
+4. Push and open a Pull Request  
 
 ---
 
-## 🤝 Contribuindo
+## License
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
+This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE).
 
 ---
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 👤 Autor
+## Author
 
 - GitHub: [@herissonneves](https://github.com/herissonneves)
 - LinkedIn: [Herisson Neves](https://linkedin.com/in/herissonneves)
 
 ---
 
-## 🙏 Agradecimentos
+## Acknowledgements
 
-- [OpenWeatherMap](https://openweathermap.org/) pela API de clima
-- [React](https://reactjs.org/) pela biblioteca incrível
-- Comunidade open source
+- [OpenWeatherMap](https://openweathermap.org/) for weather and geocoding APIs  
+- [Vite](https://vitejs.dev/) for the dev and build toolchain  
 
----
-
-Feito com ☕ e 💪 por Herisson Neves
+Built by Herisson Neves.
