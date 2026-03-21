@@ -1,132 +1,95 @@
 /**
- * Weather API Client
- * Funções para interagir com a API OpenWeatherMap
+ * Public OpenWeatherMap integration: geocoding, One Call 3.0, and a combined city lookup.
+ *
+ * Behaviour is driven by `VITE_USE_MOCK_API` and `VITE_OPEN_WEATHER_API_KEY` (see `.env.example`).
+ * Live requests use HTTPS endpoints defined in `./openWeather/urls.js`.
  */
 
 import { mockGeoApi, mockWeatherApi } from '../mocks/weatherApiMocks.js';
 
-import type { GeoLocationResult, WeatherData } from './types.js';
+import {
+  getOpenWeatherApiKey,
+  isOpenWeatherMockMode,
+  requireOpenWeatherApiKey,
+} from './openWeather/config.js';
+import { fetchOpenWeatherJson } from './openWeather/fetchJson.js';
+import { buildGeocodingDirectUrl, buildOneCallUrl } from './openWeather/urls.js';
+import type {
+  ApiKeyValidationResult,
+  CityWeatherSnapshot,
+  GeoLocationResult,
+  WeatherData,
+} from './types.js';
 
-/**
- * Verifica se deve usar mocks baseado na variável de ambiente
- */
-function shouldUseMockApi(): boolean {
-  return import.meta.env.VITE_USE_MOCK_API === 'true';
+const GEO_RESULTS_LIMIT = 5;
+
+function hasFiniteCoordinates(geo: GeoLocationResult): boolean {
+  return Number.isFinite(geo.lat) && Number.isFinite(geo.lon);
 }
 
 /**
- * Obtém a API key do ambiente
+ * Whether the app may call the real API: mock mode always passes; otherwise an API key must be set.
  */
-function getApiKey(): string | undefined {
-  return import.meta.env.VITE_OPEN_WEATHER_API_KEY;
-}
-
-/**
- * Valida se a API key está configurada (quando não usar mocks)
- */
-export function validateApiKey(): { valid: boolean; error?: string } {
-  if (shouldUseMockApi()) {
+export function validateApiKey(): ApiKeyValidationResult {
+  if (isOpenWeatherMockMode()) {
     return { valid: true };
   }
-
-  const apiKey = getApiKey();
-  if (!apiKey) {
+  if (!getOpenWeatherApiKey()) {
     return {
       valid: false,
       error: 'Erro: API key não configurada. Verifique o arquivo .env',
     };
   }
-
   return { valid: true };
 }
 
 /**
- * Busca coordenadas de uma cidade
- * @param cityName - Nome da cidade a buscar
- * @returns Array de resultados de geolocalização
+ * Geocoding API 1.0 — resolves a place name to up to {@link GEO_RESULTS_LIMIT} candidates.
+ * Empty or whitespace-only `cityName` yields `[]` without calling the network.
  */
-export async function fetchCityCoordinates(
-  cityName: string,
-): Promise<GeoLocationResult[]> {
-  if (shouldUseMockApi()) {
-    return await mockGeoApi(cityName);
+export async function fetchCityCoordinates(cityName: string): Promise<GeoLocationResult[]> {
+  const query = cityName.trim();
+  if (!query) {
+    return [];
   }
 
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error('API key não configurada');
+  if (isOpenWeatherMockMode()) {
+    return mockGeoApi(query);
   }
 
-  const url = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)}&limit=5&appid=${apiKey}`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(
-      `Erro na requisição de geolocalização: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  return await response.json();
+  const appid = requireOpenWeatherApiKey();
+  const url = buildGeocodingDirectUrl(query, GEO_RESULTS_LIMIT, appid);
+  return fetchOpenWeatherJson<GeoLocationResult[]>(url, 'Erro na requisição de geolocalização');
 }
 
 /**
- * Busca dados do clima para uma localização
- * @param lat - Latitude
- * @param lon - Longitude
- * @returns Dados do clima
+ * One Call API 3.0 — current conditions only (minutely, hourly, daily, alerts excluded).
  */
 export async function fetchWeatherData(lat: number, lon: number): Promise<WeatherData> {
-  if (shouldUseMockApi()) {
-    return await mockWeatherApi(lat, lon);
+  if (isOpenWeatherMockMode()) {
+    return mockWeatherApi(lat, lon);
   }
 
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error('API key não configurada');
-  }
-
-  const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}&exclude=minutely,hourly,daily,alerts`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(
-      `Erro na requisição do clima: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  return await response.json();
+  const appid = requireOpenWeatherApiKey();
+  const url = buildOneCallUrl(lat, lon, appid);
+  return fetchOpenWeatherJson<WeatherData>(url, 'Erro na requisição do clima');
 }
 
 /**
- * Busca dados completos do clima para uma cidade
- * @param cityName - Nome da cidade
- * @returns Objeto com dados de geolocalização e clima
+ * Resolves the first geocoding hit with finite coordinates, then loads weather for that point.
  */
-export async function fetchCityWeather(cityName: string): Promise<{
-  geo: GeoLocationResult;
-  weather: WeatherData;
-}> {
-  // Buscar coordenadas
+export async function fetchCityWeather(cityName: string): Promise<CityWeatherSnapshot> {
   const geoResults = await fetchCityCoordinates(cityName);
 
   if (!Array.isArray(geoResults) || geoResults.length === 0) {
     throw new Error('Nenhuma cidade encontrada com esse nome.');
   }
 
-  const firstResult = geoResults[0];
-  const { lat, lon } = firstResult;
-
-  if (!lat || !lon) {
+  const geo = geoResults.find(hasFiniteCoordinates);
+  if (!geo) {
     throw new Error('Coordenadas não encontradas na resposta da API');
   }
 
-  // Buscar dados do clima
-  const weather = await fetchWeatherData(lat, lon);
-
-  return {
-    geo: firstResult,
-    weather,
-  };
+  const weather = await fetchWeatherData(geo.lat, geo.lon);
+  return { geo, weather };
 }
