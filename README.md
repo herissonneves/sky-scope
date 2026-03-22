@@ -5,12 +5,13 @@ A small weather web app built with **TypeScript** and **Vite**. Search for a cit
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 
 ---
 
 ## Overview
 
-**Sky Scope** calls the [OpenWeatherMap](https://openweathermap.org/) **Geocoding API** and **One Call API 3.0** (current payload only). The UI is composed from plain DOM factories and **CSS Modules**, with global **design tokens** (light/dark and contrast variants) under `src/styles/variables/`.
+**Sky Scope** calls the [OpenWeatherMap](https://openweathermap.org/) **Geocoding API** and **One Call API 3.0** (current payload only). The UI is built with **React 19**, **CSS Modules**, and global **design tokens** (light/dark and contrast variants) under `src/styles/variables/`.
 
 ### Highlights
 
@@ -27,11 +28,11 @@ A small weather web app built with **TypeScript** and **Vite**. Search for a cit
 |------|--------|
 | Runtime / bundler | Vite 7 |
 | Language | TypeScript 5.9 |
-| UI | Vanilla DOM + CSS Modules |
+| UI | React 19 + CSS Modules |
 | Theming | CSS custom properties (Material-style tokens) |
 | Weather data | OpenWeatherMap (Geocoding 1.0 + One Call 3.0) |
 | Package manager | pnpm 10+ |
-| Lint / format | ESLint 9 (flat config), Prettier |
+| Lint / format | ESLint 9 (flat config), TypeScript ESLint, React / React Hooks, Prettier |
 
 ---
 
@@ -110,9 +111,10 @@ sky-scope/
 ├── tsconfig.json
 ├── public/
 └── src/
-    ├── main.ts                 # App bootstrap
+    ├── main.tsx                # React bootstrap
+    ├── App.tsx                 # Root component
     ├── vite-env.d.ts
-    ├── components/             # DOM factories + *.module.css
+    ├── components/             # React components + *.module.css
     ├── lib/
     │   ├── weatherApi.ts       # Public weather + geocode helpers
     │   ├── types.ts            # API-aligned TypeScript types
@@ -151,5 +153,6 @@ This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE).
 
 - [OpenWeatherMap](https://openweathermap.org/) for weather and geocoding APIs  
 - [Vite](https://vitejs.dev/) for the dev and build toolchain  
+- [React](https://react.dev/) for the UI layer  
 
 Built by Herisson Neves.
