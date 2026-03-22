@@ -15,7 +15,6 @@
     0 0.0625rem 0.1875rem 0.0625rem rgba(0, 0, 0, 0.15);
   border-radius: 0.75rem;
   text-align: center;
-  display: none;
 }
 
 .temperatureCard__value {
