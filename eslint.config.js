@@ -1,7 +1,9 @@
 import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import tsParser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import tsParser from '@typescript-eslint/parser';
+import tseslint from 'typescript-eslint';
 
 export default [
   // Ignorar arquivos
@@ -24,14 +26,22 @@ export default [
       parserOptions: {
         project: './tsconfig.json',
         sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
 
     plugins: {
       import: importPlugin,
+      react: reactPlugin,
+      'react-hooks': reactHooks,
     },
 
     rules: {
+      ...reactPlugin.configs.flat.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'react/react-in-jsx-scope': 'off',
       // Regras do plugin import
       'import/order': [
         'error',
@@ -53,6 +63,9 @@ export default [
     },
 
     settings: {
+      react: {
+        version: 'detect',
+      },
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
