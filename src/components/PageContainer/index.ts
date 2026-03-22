@@ -1,1 +1,1 @@
-export { createPageContainer } from './PageContainer.js';
+export { PageContainer } from './PageContainer.js';

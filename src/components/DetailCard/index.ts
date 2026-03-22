@@ -1,1 +1,1 @@
-export { createDetailCard, type DetailCardElements } from './DetailCard.js';
+export { DetailCard, type DetailCardProps } from './DetailCard.js';

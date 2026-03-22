@@ -1,1 +1,1 @@
-export { createTemperatureCard, type TemperatureCardElements } from './TemperatureCard.js';
+export { TemperatureCard, type TemperatureCardProps } from './TemperatureCard.js';

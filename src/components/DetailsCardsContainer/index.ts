@@ -1,4 +1,1 @@
-export {
-  createDetailsCardsContainer,
-  type DetailsCardsContainerElements,
-} from './DetailsCardsContainer.js';
+export { DetailsCardsContainer, type DetailsCardsContainerProps } from './DetailsCardsContainer.js';

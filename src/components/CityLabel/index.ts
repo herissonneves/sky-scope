@@ -1,1 +1,1 @@
-export { createCityLabel } from './CityLabel.js';
+export { CityLabel, type CityLabelProps } from './CityLabel.js';
