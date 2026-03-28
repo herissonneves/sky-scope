@@ -3,10 +3,20 @@
  *
  * Behaviour is driven by `VITE_USE_MOCK_API` and `VITE_OPEN_WEATHER_API_KEY` (see `.env.example`).
  * Live requests use HTTPS endpoints defined in `./openWeather/urls.js`.
+ *
+ * **Caching:** when not in mock mode, successful JSON responses are stored in `sessionStorage`
+ * with TTL (see {@link ./cache/sessionStorageTtlCache.js}). Mock responses are not cached so
+ * randomised demo data is not frozen across calls.
  */
 
 import { mockGeoApi, mockWeatherApi } from '../mocks/weatherApiMocks.js';
 
+import {
+  DEFAULT_WEATHER_CACHE_TTL_MS,
+  readSessionStorageCache,
+  writeSessionStorageCache,
+} from './cache/sessionStorageTtlCache.js';
+import { buildGeocodingCacheKey, buildWeatherCacheKey } from './cache/weatherApiCacheKeys.js';
 import {
   getOpenWeatherApiKey,
   isOpenWeatherMockMode,
@@ -57,9 +67,20 @@ export async function fetchCityCoordinates(cityName: string): Promise<GeoLocatio
     return mockGeoApi(query);
   }
 
+  const geoCacheKey = buildGeocodingCacheKey(query);
+  const cachedGeo = readSessionStorageCache<GeoLocationResult[]>(geoCacheKey);
+  if (cachedGeo !== null) {
+    return cachedGeo;
+  }
+
   const appid = requireOpenWeatherApiKey();
   const url = buildGeocodingDirectUrl(query, GEO_RESULTS_LIMIT, appid);
-  return fetchOpenWeatherJson<GeoLocationResult[]>(url, 'Erro na requisição de geolocalização');
+  const geoResults = await fetchOpenWeatherJson<GeoLocationResult[]>(
+    url,
+    'Erro na requisição de geolocalização',
+  );
+  writeSessionStorageCache(geoCacheKey, geoResults, DEFAULT_WEATHER_CACHE_TTL_MS);
+  return geoResults;
 }
 
 /**
@@ -70,9 +91,17 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
     return mockWeatherApi(lat, lon);
   }
 
+  const weatherCacheKey = buildWeatherCacheKey(lat, lon);
+  const cachedWeather = readSessionStorageCache<WeatherData>(weatherCacheKey);
+  if (cachedWeather !== null) {
+    return cachedWeather;
+  }
+
   const appid = requireOpenWeatherApiKey();
   const url = buildOneCallUrl(lat, lon, appid);
-  return fetchOpenWeatherJson<WeatherData>(url, 'Erro na requisição do clima');
+  const weather = await fetchOpenWeatherJson<WeatherData>(url, 'Erro na requisição do clima');
+  writeSessionStorageCache(weatherCacheKey, weather, DEFAULT_WEATHER_CACHE_TTL_MS);
+  return weather;
 }
 
 /**
