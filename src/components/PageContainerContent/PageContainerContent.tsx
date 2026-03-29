@@ -1,6 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { fetchCityWeather, validateApiKey } from '../../lib/index.js';
+import { getCachedGeolocation } from '../../lib/geolocation.js';
+import {
+  fetchCityWeather,
+  fetchWeatherForCoordinates,
+  validateApiKey,
+} from '../../lib/index.js';
+import type { GeoLocationResult, WeatherData } from '../../lib/types.js';
 import { CityLabel } from '../CityLabel/CityLabel.js';
 import { DetailsCardsContainer } from '../DetailsCardsContainer/DetailsCardsContainer.js';
 import resultElementStyles from '../ResultElement/ResultElement.module.css';
@@ -44,26 +50,8 @@ export function PageContainerContent() {
     setResult((r) => ({ ...r, visible: false }));
   }, []);
 
-  const handleSearch = useCallback(async () => {
-    const cityName = query.trim();
-    if (!cityName) {
-      showResult('Por favor, digite o nome de uma cidade.', 'error');
-      return;
-    }
-
-    const apiValidation = validateApiKey();
-    if (!apiValidation.valid) {
-      showResult(apiValidation.error, 'error');
-      return;
-    }
-
-    showResult('Buscando...', 'default');
-    setBusy(true);
-
-    try {
-      setResult({ visible: true, text: 'Buscando cidade...', variant: 'default' });
-      const { geo, weather: weatherData } = await fetchCityWeather(cityName);
-
+  const applyWeatherSnapshot = useCallback(
+    (geo: GeoLocationResult, weatherData: WeatherData) => {
       const cityNamePt = geo.local_names?.pt || geo.name;
       const country = geo.country || '';
       const state = geo.state || '';
@@ -95,6 +83,77 @@ export function PageContainerContent() {
       } else {
         showResult('Dados de temperatura não disponíveis.', 'info');
       }
+    },
+    [hideResult, showResult],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadLocationWeather = async () => {
+      const apiValidation = validateApiKey();
+      if (!apiValidation.valid) {
+        return;
+      }
+
+      setBusy(true);
+      showResult('Obtendo localização...', 'default');
+
+      try {
+        const pos = await getCachedGeolocation();
+        if (cancelled) return;
+
+        if (!pos) {
+          hideResult();
+          return;
+        }
+
+        setResult({ visible: true, text: 'Buscando previsão para sua localização...', variant: 'default' });
+        const { geo, weather: weatherData } = await fetchWeatherForCoordinates(
+          pos.latitude,
+          pos.longitude,
+        );
+        if (cancelled) return;
+
+        applyWeatherSnapshot(geo, weatherData);
+      } catch (error) {
+        if (cancelled) return;
+        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+        showResult(`Erro ao carregar clima local: ${errorMessage}`, 'error');
+      } finally {
+        if (!cancelled) {
+          setBusy(false);
+        }
+      }
+    };
+
+    void loadLocationWeather();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyWeatherSnapshot, hideResult, showResult]);
+
+  const handleSearch = useCallback(async () => {
+    const cityName = query.trim();
+    if (!cityName) {
+      showResult('Por favor, digite o nome de uma cidade.', 'error');
+      return;
+    }
+
+    const apiValidation = validateApiKey();
+    if (!apiValidation.valid) {
+      showResult(apiValidation.error, 'error');
+      return;
+    }
+
+    showResult('Buscando...', 'default');
+    setBusy(true);
+
+    try {
+      setResult({ visible: true, text: 'Buscando cidade...', variant: 'default' });
+      const { geo, weather: weatherData } = await fetchCityWeather(cityName);
+      applyWeatherSnapshot(geo, weatherData);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       const isNotFound = errorMessage.includes('Nenhuma cidade encontrada');
@@ -103,7 +162,7 @@ export function PageContainerContent() {
     } finally {
       setBusy(false);
     }
-  }, [query, showResult, hideResult]);
+  }, [query, showResult, applyWeatherSnapshot]);
 
   const resultModifierClass =
     result.variant === 'error'

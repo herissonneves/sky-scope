@@ -17,3 +17,10 @@ export function buildGeocodingCacheKey(normalisedQuery: string): string {
 export function buildWeatherCacheKey(lat: number, lon: number): string {
   return `weather:${lat.toFixed(4)}:${lon.toFixed(4)}`;
 }
+
+/**
+ * Reverse geocoding cache key: same rounding as weather so one place → one label cache entry.
+ */
+export function buildReverseGeocodingCacheKey(lat: number, lon: number): string {
+  return `reverse:${lat.toFixed(4)}:${lon.toFixed(4)}`;
+}

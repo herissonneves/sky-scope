@@ -1,5 +1,5 @@
 /**
- * Public OpenWeatherMap integration: geocoding, One Call 3.0, and a combined city lookup.
+ * Public OpenWeatherMap integration: geocoding, One Call 3.0, and a combined city / coordinates lookup.
  *
  * Behaviour is driven by `VITE_USE_MOCK_API` and `VITE_OPEN_WEATHER_API_KEY` (see `.env.example`).
  * Live requests use HTTPS endpoints defined in `./openWeather/urls.js`.
@@ -16,14 +16,18 @@ import {
   readSessionStorageCache,
   writeSessionStorageCache,
 } from './cache/sessionStorageTtlCache.js';
-import { buildGeocodingCacheKey, buildWeatherCacheKey } from './cache/weatherApiCacheKeys.js';
+import {
+  buildGeocodingCacheKey,
+  buildReverseGeocodingCacheKey,
+  buildWeatherCacheKey,
+} from './cache/weatherApiCacheKeys.js';
 import {
   getOpenWeatherApiKey,
   isOpenWeatherMockMode,
   requireOpenWeatherApiKey,
 } from './openWeather/config.js';
 import { fetchOpenWeatherJson } from './openWeather/fetchJson.js';
-import { buildGeocodingDirectUrl, buildOneCallUrl } from './openWeather/urls.js';
+import { buildGeocodingDirectUrl, buildOneCallUrl, buildReverseGeocodingUrl } from './openWeather/urls.js';
 import type {
   ApiKeyValidationResult,
   CityWeatherSnapshot,
@@ -35,6 +39,15 @@ const GEO_RESULTS_LIMIT = 5;
 
 function hasFiniteCoordinates(geo: GeoLocationResult): boolean {
   return Number.isFinite(geo.lat) && Number.isFinite(geo.lon);
+}
+
+function fallbackGeoForCoordinates(lat: number, lon: number): GeoLocationResult {
+  return {
+    name: 'Localização atual',
+    lat,
+    lon,
+    country: '',
+  };
 }
 
 /**
@@ -102,6 +115,48 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
   const weather = await fetchOpenWeatherJson<WeatherData>(url, 'Erro na requisição do clima');
   writeSessionStorageCache(weatherCacheKey, weather, DEFAULT_WEATHER_CACHE_TTL_MS);
   return weather;
+}
+
+const REVERSE_GEO_LIMIT = 1;
+
+/**
+ * Reverse geocoding — place name for map coordinates. In mock mode returns a synthetic label only.
+ */
+export async function fetchReverseGeocoding(lat: number, lon: number): Promise<GeoLocationResult | null> {
+  if (isOpenWeatherMockMode()) {
+    return fallbackGeoForCoordinates(lat, lon);
+  }
+
+  const reverseKey = buildReverseGeocodingCacheKey(lat, lon);
+  const cached = readSessionStorageCache<GeoLocationResult>(reverseKey);
+  if (cached !== null) {
+    return cached;
+  }
+
+  const appid = requireOpenWeatherApiKey();
+  const url = buildReverseGeocodingUrl(lat, lon, REVERSE_GEO_LIMIT, appid);
+  const rows = await fetchOpenWeatherJson<GeoLocationResult[]>(
+    url,
+    'Erro na geocodificação reversa',
+  );
+  const first = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+  if (first && hasFiniteCoordinates(first)) {
+    writeSessionStorageCache(reverseKey, first, DEFAULT_WEATHER_CACHE_TTL_MS);
+    return first;
+  }
+  return null;
+}
+
+/**
+ * Current weather for GPS coordinates: reverse geocode (for label) + One Call payload.
+ */
+export async function fetchWeatherForCoordinates(lat: number, lon: number): Promise<CityWeatherSnapshot> {
+  const [weather, geoFromApi] = await Promise.all([
+    fetchWeatherData(lat, lon),
+    fetchReverseGeocoding(lat, lon),
+  ]);
+  const geo = geoFromApi ?? fallbackGeoForCoordinates(lat, lon);
+  return { geo, weather };
 }
 
 /**
