@@ -14,7 +14,12 @@ export function buildGeocodingDirectUrl(cityQuery: string, limit: number, appid:
   })}`;
 }
 
-export function buildReverseGeocodingUrl(lat: number, lon: number, limit: number, appid: string): string {
+export function buildReverseGeocodingUrl(
+  lat: number,
+  lon: number,
+  limit: number,
+  appid: string,
+): string {
   return `${GEO_REVERSE}?${new URLSearchParams({
     lat: String(lat),
     lon: String(lon),
