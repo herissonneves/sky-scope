@@ -2,6 +2,8 @@
  * URL builders for OpenWeatherMap HTTP endpoints (query params encoded via URLSearchParams).
  */
 
+import type { TemperatureUnit } from '../temperatureUnitsStorage.js';
+
 const GEO_DIRECT = 'https://api.openweathermap.org/geo/1.0/direct';
 const GEO_REVERSE = 'https://api.openweathermap.org/geo/1.0/reverse';
 const ONECALL_3 = 'https://api.openweathermap.org/data/3.0/onecall';
@@ -28,11 +30,17 @@ export function buildReverseGeocodingUrl(
   })}`;
 }
 
-export function buildOneCallUrl(lat: number, lon: number, appid: string): string {
+export function buildOneCallUrl(
+  lat: number,
+  lon: number,
+  appid: string,
+  units: TemperatureUnit,
+): string {
   return `${ONECALL_3}?${new URLSearchParams({
     lat: String(lat),
     lon: String(lon),
     appid,
+    units,
     exclude: 'minutely,hourly,alerts',
   })}`;
 }

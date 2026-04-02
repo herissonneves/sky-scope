@@ -3,6 +3,8 @@
  * Keys are namespaced by type so geocoding and One Call payloads never collide.
  */
 
+import type { TemperatureUnit } from '../temperatureUnitsStorage.js';
+
 /**
  * Geocoding cache key: normalised query (trim + lower case) so case-only differences hit the same entry.
  */
@@ -11,11 +13,11 @@ export function buildGeocodingCacheKey(normalisedQuery: string): string {
 }
 
 /**
- * One Call cache key: coordinates rounded to 4 decimals (~11 m) — enough to match the same place
- * without fragmenting the cache on floating noise.
+ * One Call cache key: coordinates rounded to 4 decimals (~11 m) and `units` so metric/imperial
+ * responses are not mixed.
  */
-export function buildWeatherCacheKey(lat: number, lon: number): string {
-  return `weather:${lat.toFixed(4)}:${lon.toFixed(4)}`;
+export function buildWeatherCacheKey(lat: number, lon: number, units: TemperatureUnit): string {
+  return `weather:${units}:${lat.toFixed(4)}:${lon.toFixed(4)}`;
 }
 
 /**

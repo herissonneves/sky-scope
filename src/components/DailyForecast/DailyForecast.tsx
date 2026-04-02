@@ -1,14 +1,9 @@
+import type { DailyForecastDay } from '../../lib/weatherDisplayFormat.js';
 import layoutStyles from '../PageContainerContent/PageContainerContent.module.css';
 
 import styles from './DailyForecast.module.css';
 
-export interface DailyForecastDay {
-  label: string;
-  /** `daily.weather[0].main` from One Call (e.g. Clear, Rain). */
-  main: string;
-  min: string;
-  max: string;
-}
+export type { DailyForecastDay };
 
 export interface DailyForecastProps {
   visible: boolean;

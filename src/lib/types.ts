@@ -4,8 +4,7 @@
  * - {@link https://openweathermap.org/api/one-call-3 One Call API 3.0} (`/data/3.0/onecall`)
  *
  * Field names and shapes follow the upstream JSON. Numeric units depend on the `units`
- * query parameter on the request; this project calls One Call without `units`, so the
- * API uses **standard** units (e.g. temperature in Kelvin, wind in m/s, visibility in metres).
+ * query parameter on One Call (`metric` → °C + m/s, `imperial` → °F + mph).
  */
 
 /**
@@ -55,7 +54,7 @@ export interface WeatherCurrent {
   sunrise?: number;
   /** Unix time (seconds, UTC) of sunset for the current day. */
   sunset?: number;
-  /** Air temperature (Kelvin with default `units`; convert with −273.15 for °C). */
+  /** Air temperature (°C with `units=metric`, °F with `units=imperial`). */
   temp: number;
   /** Apparent temperature (same units as `temp`). */
   feels_like: number;
@@ -71,7 +70,7 @@ export interface WeatherCurrent {
   clouds: number;
   /** Average visibility, metres. */
   visibility: number;
-  /** Wind speed (m/s with default `units`). */
+  /** Wind speed (m/s with `metric`, mph with `imperial`). */
   wind_speed: number;
   /** Wind direction, degrees (meteorological). */
   wind_deg: number;
@@ -82,7 +81,7 @@ export interface WeatherCurrent {
 
 /**
  * Daily `temp` object from One Call 3.0 (`daily[].temp`).
- * Other keys (`morn`, `day`, etc.) may be present; we use `min` / `max` for the forecast strip.
+ * `min` / `max` match the request `units` (°C with `metric`, °F with `imperial`).
  */
 export interface WeatherDailyTemp {
   min: number;

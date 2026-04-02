@@ -28,6 +28,7 @@ import {
 } from './openWeather/config.js';
 import { fetchOpenWeatherJson } from './openWeather/fetchJson.js';
 import { buildGeocodingDirectUrl, buildOneCallUrl, buildReverseGeocodingUrl } from './openWeather/urls.js';
+import type { TemperatureUnit } from './temperatureUnitsStorage.js';
 import type {
   ApiKeyValidationResult,
   CityWeatherSnapshot,
@@ -98,20 +99,25 @@ export async function fetchCityCoordinates(cityName: string): Promise<GeoLocatio
 
 /**
  * One Call API 3.0 — current + daily forecast (minutely, hourly, alerts excluded).
+ * `units` must match {@link buildOneCallUrl} (`metric` or `imperial`).
  */
-export async function fetchWeatherData(lat: number, lon: number): Promise<WeatherData> {
+export async function fetchWeatherData(
+  lat: number,
+  lon: number,
+  units: TemperatureUnit,
+): Promise<WeatherData> {
   if (isOpenWeatherMockMode()) {
-    return mockWeatherApi(lat, lon);
+    return mockWeatherApi(lat, lon, units);
   }
 
-  const weatherCacheKey = buildWeatherCacheKey(lat, lon);
+  const weatherCacheKey = buildWeatherCacheKey(lat, lon, units);
   const cachedWeather = readSessionStorageCache<WeatherData>(weatherCacheKey);
   if (cachedWeather !== null) {
     return cachedWeather;
   }
 
   const appid = requireOpenWeatherApiKey();
-  const url = buildOneCallUrl(lat, lon, appid);
+  const url = buildOneCallUrl(lat, lon, appid, units);
   const weather = await fetchOpenWeatherJson<WeatherData>(url, 'Erro na requisição do clima');
   writeSessionStorageCache(weatherCacheKey, weather, DEFAULT_WEATHER_CACHE_TTL_MS);
   return weather;
@@ -150,9 +156,13 @@ export async function fetchReverseGeocoding(lat: number, lon: number): Promise<G
 /**
  * Current weather for GPS coordinates: reverse geocode (for label) + One Call payload.
  */
-export async function fetchWeatherForCoordinates(lat: number, lon: number): Promise<CityWeatherSnapshot> {
+export async function fetchWeatherForCoordinates(
+  lat: number,
+  lon: number,
+  units: TemperatureUnit,
+): Promise<CityWeatherSnapshot> {
   const [weather, geoFromApi] = await Promise.all([
-    fetchWeatherData(lat, lon),
+    fetchWeatherData(lat, lon, units),
     fetchReverseGeocoding(lat, lon),
   ]);
   const geo = geoFromApi ?? fallbackGeoForCoordinates(lat, lon);
@@ -162,7 +172,10 @@ export async function fetchWeatherForCoordinates(lat: number, lon: number): Prom
 /**
  * Resolves the first geocoding hit with finite coordinates, then loads weather for that point.
  */
-export async function fetchCityWeather(cityName: string): Promise<CityWeatherSnapshot> {
+export async function fetchCityWeather(
+  cityName: string,
+  units: TemperatureUnit,
+): Promise<CityWeatherSnapshot> {
   const geoResults = await fetchCityCoordinates(cityName);
 
   if (!Array.isArray(geoResults) || geoResults.length === 0) {
@@ -174,6 +187,6 @@ export async function fetchCityWeather(cityName: string): Promise<CityWeatherSna
     throw new Error('Coordenadas não encontradas na resposta da API');
   }
 
-  const weather = await fetchWeatherData(geo.lat, geo.lon);
+  const weather = await fetchWeatherData(geo.lat, geo.lon, units);
   return { geo, weather };
 }
