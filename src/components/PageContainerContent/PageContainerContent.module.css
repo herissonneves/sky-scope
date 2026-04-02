@@ -33,6 +33,15 @@
   flex-direction: row;
 }
 
+/* Previsão diária - oculto por padrão */
+.pageContainerContent__dailyForecast {
+  display: none;
+}
+
+.pageContainerContent__dailyForecast_visible {
+  display: block;
+}
+
 /* Result element (mensagens de estado/erro) - oculto por padrão */
 .pageContainerContent__result {
   display: none;

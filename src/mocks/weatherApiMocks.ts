@@ -46,6 +46,30 @@ export const mockGeoData = [
   },
 ] as const satisfies readonly GeoLocationResult[];
 
+const MOCK_DAY_START = 1705680000;
+
+const MOCK_DAILY_MAIN = ['Clear', 'Clouds', 'Rain', 'Drizzle', 'Thunderstorm', 'Clear'] as const;
+
+/** Six days of daily min/max (Kelvin); UI uses the first five. */
+const mockDailyTemplate = Array.from({ length: 6 }, (_, i) => {
+  const spread = i * 0.8;
+  return {
+    dt: MOCK_DAY_START + i * 86_400,
+    temp: {
+      min: 288.15 + spread,
+      max: 301.15 + spread,
+    },
+    weather: [
+      {
+        id: 800 + i,
+        main: MOCK_DAILY_MAIN[i],
+        description: 'mock',
+        icon: '02d',
+      },
+    ],
+  };
+}) satisfies WeatherData['daily'];
+
 /** Static One Call 3.0 payload template (`WeatherData`); `lat` / `lon` are overwritten in `mockWeatherApi`. */
 export const mockWeatherData = {
   lat: -15.7934036,
@@ -76,6 +100,7 @@ export const mockWeatherData = {
       },
     ],
   },
+  daily: mockDailyTemplate,
 } as const satisfies WeatherData;
 
 export const simulateApiDelay = (ms: number = 500): Promise<void> => {
@@ -104,6 +129,8 @@ export async function mockWeatherApi(lat: number, lon: number): Promise<WeatherD
 
   const base = mockWeatherData;
 
+  const jitter = () => Math.random() * 2 - 1;
+
   return {
     ...base,
     lat,
@@ -115,5 +142,12 @@ export async function mockWeatherApi(lat: number, lon: number): Promise<WeatherD
       humidity: Math.round(base.current.humidity + (Math.random() * 20 - 10)),
       wind_speed: base.current.wind_speed + (Math.random() * 2 - 1),
     },
+    daily: base.daily?.map((day) => ({
+      ...day,
+      temp: {
+        min: day.temp.min + jitter(),
+        max: day.temp.max + jitter(),
+      },
+    })),
   };
 }

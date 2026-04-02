@@ -33,6 +33,6 @@ export function buildOneCallUrl(lat: number, lon: number, appid: string): string
     lat: String(lat),
     lon: String(lon),
     appid,
-    exclude: 'minutely,hourly,daily,alerts',
+    exclude: 'minutely,hourly,alerts',
   })}`;
 }

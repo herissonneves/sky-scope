@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { formatForecastDayLabel } from '../../lib/forecastFormat.js';
 import { getCachedGeolocation } from '../../lib/geolocation.js';
 import {
   fetchCityWeather,
@@ -8,6 +9,7 @@ import {
 } from '../../lib/index.js';
 import type { GeoLocationResult, WeatherData } from '../../lib/types.js';
 import { CityLabel } from '../CityLabel/CityLabel.js';
+import { DailyForecast, type DailyForecastDay } from '../DailyForecast/DailyForecast.js';
 import { DetailsCardsContainer } from '../DetailsCardsContainer/DetailsCardsContainer.js';
 import resultElementStyles from '../ResultElement/ResultElement.module.css';
 import { SearchInput } from '../SearchInput/SearchInput.js';
@@ -31,6 +33,7 @@ export function PageContainerContent() {
     feels: string;
     humidity: string;
     wind: string;
+    dailyForecast: DailyForecastDay[];
   } | null>(null);
 
   const hidePanels = useCallback(() => {
@@ -73,11 +76,32 @@ export function PageContainerContent() {
             ? Math.round(weatherData.current.wind_speed * 3.6)
             : null;
 
+        const tz = weatherData.timezone || 'UTC';
+        const dailyForecast: DailyForecastDay[] = [];
+        if (Array.isArray(weatherData.daily)) {
+          for (const d of weatherData.daily.slice(0, 5)) {
+            if (typeof d.temp?.min !== 'number' || typeof d.temp?.max !== 'number') {
+              continue;
+            }
+            const main =
+              typeof d.weather?.[0]?.main === 'string' && d.weather[0].main.length > 0
+                ? d.weather[0].main
+                : '—';
+            dailyForecast.push({
+              label: formatForecastDayLabel(d.dt, tz),
+              main,
+              min: `${Math.round(d.temp.min - 273.15)}°C`,
+              max: `${Math.round(d.temp.max - 273.15)}°C`,
+            });
+          }
+        }
+
         setWeather({
           temp: `${tempCelsius}°C`,
           feels: feelsLikeCelsius !== null ? `${feelsLikeCelsius}°C` : 'N/A',
           humidity: humidity !== null ? `${humidity}%` : 'N/A',
           wind: windKmh !== null ? `${windKmh} km/h` : 'N/A',
+          dailyForecast,
         });
         hideResult();
       } else {
@@ -181,6 +205,10 @@ export function PageContainerContent() {
         feelsLike={weather?.feels ?? 'N/A'}
         humidity={weather?.humidity ?? 'N/A'}
         windSpeed={weather?.wind ?? 'N/A'}
+      />
+      <DailyForecast
+        visible={Boolean(weather && weather.dailyForecast.length > 0)}
+        days={weather?.dailyForecast ?? []}
       />
       {result.visible ? (
         <p

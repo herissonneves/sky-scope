@@ -81,7 +81,26 @@ export interface WeatherCurrent {
 }
 
 /**
- * Root payload from One Call 3.0 when excluding minutely, hourly, daily, and alerts.
+ * Daily `temp` object from One Call 3.0 (`daily[].temp`).
+ * Other keys (`morn`, `day`, etc.) may be present; we use `min` / `max` for the forecast strip.
+ */
+export interface WeatherDailyTemp {
+  min: number;
+  max: number;
+}
+
+/**
+ * One day in the `daily` array from One Call 3.0 (subset used by the app).
+ */
+export interface WeatherDaily {
+  dt: number;
+  temp: WeatherDailyTemp;
+  /** First slot’s `main` is shown in the 5-day strip (e.g. `Clear`, `Rain`). */
+  weather?: WeatherCondition[];
+}
+
+/**
+ * Root payload from One Call 3.0 when excluding minutely, hourly, and alerts (`daily` included).
  */
 export interface WeatherData {
   lat: number;
@@ -91,6 +110,8 @@ export interface WeatherData {
   /** Offset from UTC in seconds (not necessarily a multiple of 3600). */
   timezone_offset: number;
   current: WeatherCurrent;
+  /** Up to 8 days from One Call; we display the first 5. */
+  daily?: WeatherDaily[];
 }
 
 /** Outcome of checking whether the app can call OpenWeatherMap (key present when not in mock mode). */

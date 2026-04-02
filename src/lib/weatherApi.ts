@@ -97,7 +97,7 @@ export async function fetchCityCoordinates(cityName: string): Promise<GeoLocatio
 }
 
 /**
- * One Call API 3.0 — current conditions only (minutely, hourly, daily, alerts excluded).
+ * One Call API 3.0 — current + daily forecast (minutely, hourly, alerts excluded).
  */
 export async function fetchWeatherData(lat: number, lon: number): Promise<WeatherData> {
   if (isOpenWeatherMockMode()) {
