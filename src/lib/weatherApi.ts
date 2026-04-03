@@ -5,22 +5,23 @@
  * Live requests use HTTPS endpoints defined in `./openWeather/urls.js`.
  *
  * **Caching:** when not in mock mode, successful JSON responses are stored in `sessionStorage`
- * with TTL (see {@link ./cache/sessionStorageTtlCache.js}). Mock responses are not cached so
+ * with TTL (see {@link ./cache/sessionStorageTtlCache.js}; keys from
+ * {@link ./cache/openWeather/index.js}). Mock responses are not cached so
  * randomised demo data is not frozen across calls.
  */
 
 import { mockGeoApi, mockWeatherApi } from '../mocks/weatherApiMocks.js';
 
 import {
+  buildGeocodingCacheKey,
+  buildReverseGeocodingCacheKey,
+  buildWeatherCacheKey,
+} from './cache/openWeather/index.js';
+import {
   DEFAULT_WEATHER_CACHE_TTL_MS,
   readSessionStorageCache,
   writeSessionStorageCache,
 } from './cache/sessionStorageTtlCache.js';
-import {
-  buildGeocodingCacheKey,
-  buildReverseGeocodingCacheKey,
-  buildWeatherCacheKey,
-} from './cache/weatherApiCacheKeys.js';
 import {
   getOpenWeatherApiKey,
   isOpenWeatherMockMode,
