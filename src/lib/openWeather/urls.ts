@@ -41,6 +41,7 @@ export function buildOneCallUrl(
     lon: String(lon),
     appid,
     units,
+    lang: 'pt_br',
     exclude: 'minutely,hourly,alerts',
   })}`;
 }

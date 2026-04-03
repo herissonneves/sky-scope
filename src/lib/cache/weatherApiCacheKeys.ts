@@ -13,11 +13,11 @@ export function buildGeocodingCacheKey(normalisedQuery: string): string {
 }
 
 /**
- * One Call cache key: coordinates rounded to 4 decimals (~11 m) and `units` so metric/imperial
- * responses are not mixed.
+ * One Call cache key: coordinates rounded to 4 decimals (~11 m), `units`, and `lang` so responses
+ * stay consistent with {@link ../openWeather/urls.js buildOneCallUrl}.
  */
 export function buildWeatherCacheKey(lat: number, lon: number, units: TemperatureUnit): string {
-  return `weather:${units}:${lat.toFixed(4)}:${lon.toFixed(4)}`;
+  return `weather:${units}:pt_br:${lat.toFixed(4)}:${lon.toFixed(4)}`;
 }
 
 /**
