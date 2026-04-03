@@ -1,9 +1,25 @@
 /**
  * PageContainerContent - estilos condicionais (BEM)
  * Block: pageContainerContent
- * Elements: cityLabel, temperatureCard, detailsCards, result
+ * Elements: searchRow, searchInputGrow, cityLabel, temperatureCard, detailsCards, result
  * Modifiers: visible, error, info, default
  */
+
+/* Linha: campo de busca + toggle de unidades */
+.pageContainerContent__searchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.pageContainerContent__searchInputGrow {
+  flex: 1 1 12rem;
+  min-width: 0;
+  max-width: none;
+}
 
 /* City label - oculto por padrão */
 .pageContainerContent__cityLabel {

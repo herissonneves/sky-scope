@@ -9,9 +9,11 @@ export interface SearchInputProps {
   onChange: (value: string) => void;
   onSearch: () => void;
   disabled?: boolean;
+  /** Merged onto the root wrapper (e.g. flex grow in a toolbar row). */
+  className?: string;
 }
 
-export function SearchInput({ value, onChange, onSearch, disabled }: SearchInputProps) {
+export function SearchInput({ value, onChange, onSearch, disabled, className }: SearchInputProps) {
   const [inputFocused, setInputFocused] = useState(false);
   const [iconHover, setIconHover] = useState(false);
 
@@ -23,7 +25,7 @@ export function SearchInput({ value, onChange, onSearch, disabled }: SearchInput
   };
 
   return (
-    <div className={styles.searchInput}>
+    <div className={`${styles.searchInput} ${className ?? ''}`.trim()}>
       <input
         type="text"
         className={`${styles.searchInput__input} ${layoutStyles.pageContainerContent__input} ${

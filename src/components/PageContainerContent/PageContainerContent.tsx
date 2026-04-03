@@ -201,8 +201,16 @@ export function PageContainerContent() {
 
   return (
     <>
-      <SearchInput value={query} onChange={setQuery} onSearch={handleSearch} disabled={busy} />
-      <TemperatureUnitsToggle value={units} onChange={handleUnitsChange} disabled={busy} />
+      <div className={styles.pageContainerContent__searchRow}>
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          onSearch={handleSearch}
+          disabled={busy}
+          className={styles.pageContainerContent__searchInputGrow}
+        />
+        <TemperatureUnitsToggle value={units} onChange={handleUnitsChange} disabled={busy} />
+      </div>
       <CityLabel visible={Boolean(locationLine)} text={locationLine ?? ''} />
       <TemperatureCard visible={Boolean(displayWeather)} value={displayWeather?.temp ?? ''} />
       <DetailsCardsContainer
